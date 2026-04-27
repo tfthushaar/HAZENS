@@ -436,8 +436,61 @@
             .footer { padding: 0 2rem 2rem; }
         }
 
-        .ui-layer {
+        .layer-blur {
             display: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        .ui-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: block !important;
+            pointer-events: none;
+        }
+
+        .ui-layer .nav,
+        .ui-layer .hero,
+        .ui-layer .footer-left {
+            display: none !important;
+        }
+
+        .morph-info {
+            position: fixed;
+            right: 3.5rem;
+            bottom: 6rem;
+            display: flex !important;
+            padding: 0;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .footer {
+            position: fixed;
+            right: 3.5rem;
+            bottom: 3.2rem;
+            display: block;
+            padding: 0;
+            pointer-events: none;
+        }
+
+        .footer-right {
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            .morph-info {
+                right: 1.5rem;
+                bottom: 5rem;
+                display: flex !important;
+            }
+
+            .footer {
+                right: 1.5rem;
+                bottom: 2rem;
+                padding: 0;
+            }
         }
     </style>
     <script type="importmap">

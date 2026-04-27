@@ -61,7 +61,8 @@
     position: fixed;
     inset: 0;
     z-index: 1;
-    background: rgba(7,6,4,0.38);
+    display: none;
+    background: transparent;
     pointer-events: none;
   }
 
@@ -128,14 +129,15 @@
     z-index: 2;
     min-height: 100vh;
     padding: 150px clamp(24px, 6vw, 96px) 78px;
-    display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.6fr);
-    gap: clamp(40px, 8vw, 120px);
+    display: flex;
     align-items: end;
     pointer-events: none;
   }
 
-  .hero > * { pointer-events: auto; }
+  .hero-content {
+    max-width: 860px;
+    pointer-events: none;
+  }
 
   .eyebrow {
     font-size: 10px;
@@ -172,14 +174,18 @@
     flex-wrap: wrap;
     gap: 14px;
     margin-top: 34px;
+    pointer-events: auto;
   }
 
   .hero-panel {
-    align-self: center;
-    padding: 34px 34px 38px;
-    border: 1px solid var(--line);
-    background: var(--panel);
-    backdrop-filter: blur(18px);
+    margin: 0 0 42px;
+    padding: 34px 0 38px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: minmax(280px, 0.65fr) minmax(0, 1fr);
+    gap: clamp(28px, 6vw, 90px);
+    align-items: start;
   }
 
   .panel-title {
@@ -195,7 +201,7 @@
     color: var(--ivory);
     font-size: 13px;
     line-height: 2;
-    margin-bottom: 26px;
+    margin-bottom: 0;
   }
 
   .signature-list {
@@ -350,8 +356,8 @@
   }
 
   @media (max-width: 980px) {
-    .hero { grid-template-columns: 1fr; align-items: end; }
-    .hero-panel { max-width: 560px; }
+    .hero { align-items: end; }
+    .hero-panel { grid-template-columns: 1fr; }
     .section-heading { display: block; }
     .section-heading p { margin-top: 18px; }
     .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -364,7 +370,7 @@
     .nav-button { min-height: 38px; padding: 0 16px; }
     .hero { padding: 124px 22px 54px; }
     h1 { font-size: clamp(66px, 18vw, 104px); }
-    .hero-panel { padding: 28px 24px 32px; }
+    .hero-panel { padding: 28px 0 32px; }
     .category-grid { grid-template-columns: 1fr; }
     .categories { padding: 64px 22px 72px; }
   }
@@ -386,7 +392,7 @@
   </nav>
 
   <section class="hero">
-    <div>
+    <div class="hero-content">
       <div class="eyebrow">Architectural Lighting Systems</div>
       <h1>Radiance<br><em>Redefined</em></h1>
       <p class="hero-copy">
@@ -399,13 +405,17 @@
         <a class="hero-button" href="#collections">View Collections</a>
       </div>
     </div>
+  </section>
 
+  <section id="collections" class="categories">
     <aside class="hero-panel">
-      <div class="panel-title">Layered light, intentional space.</div>
-      <p class="panel-copy">
-        Hazen creates layered lighting environments that balance ambient, accent, and feature lighting
-        to achieve depth, warmth, and visual harmony for luxury residential, commercial, and hospitality spaces.
-      </p>
+      <div>
+        <div class="panel-title">Layered light, intentional space.</div>
+        <p class="panel-copy">
+          Hazen creates layered lighting environments that balance ambient, accent, and feature lighting
+          to achieve depth, warmth, and visual harmony for luxury residential, commercial, and hospitality spaces.
+        </p>
+      </div>
       <div class="signature-list">
         <div class="signature-item">
           <div class="signature-number">01</div>
@@ -421,9 +431,7 @@
         </div>
       </div>
     </aside>
-  </section>
 
-  <section id="collections" class="categories">
     <div class="section-heading">
       <h2>Our Product<br><em>Collection</em></h2>
       <p>
