@@ -1,5 +1,5 @@
 {
-  "name": "convert-static-image-to-3d-ass",
+  "name": "remix-vanta-digital-atelier",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "^0.183.2"
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "vite": "^6.0.0"

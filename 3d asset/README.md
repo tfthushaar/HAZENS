@@ -1,4 +1,4 @@
-# Convert static image to 3D asset
+# Remix: Vanta Digital Atelier
 
 Created with [Omma](https://omma.build)
 

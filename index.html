@@ -39,13 +39,13 @@
     position: relative;
     min-height: 100vh;
     isolation: isolate;
-    background: var(--ink);
+    background: transparent;
   }
 
   .landing-3d {
     position: fixed;
     inset: 0;
-    z-index: -3;
+    z-index: 0;
     background: #050403;
   }
 
@@ -54,14 +54,14 @@
     height: 100%;
     border: 0;
     display: block;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   .scene-veil {
     position: fixed;
     inset: 0;
-    z-index: -2;
-    background: rgba(7,6,4,0.48);
+    z-index: 1;
+    background: rgba(7,6,4,0.38);
     pointer-events: none;
   }
 
@@ -124,13 +124,18 @@
   }
 
   .hero {
+    position: relative;
+    z-index: 2;
     min-height: 100vh;
     padding: 150px clamp(24px, 6vw, 96px) 78px;
     display: grid;
     grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.6fr);
     gap: clamp(40px, 8vw, 120px);
     align-items: end;
+    pointer-events: none;
   }
+
+  .hero > * { pointer-events: auto; }
 
   .eyebrow {
     font-size: 10px;
@@ -221,6 +226,8 @@
   }
 
   .categories {
+    position: relative;
+    z-index: 3;
     padding: 84px clamp(24px, 6vw, 96px) 96px;
     background: rgba(7,6,4,0.78);
     border-top: 1px solid var(--line);
@@ -287,12 +294,68 @@
     line-height: 1.9;
   }
 
+  .content-bands {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 44px;
+    margin-top: 58px;
+  }
+
+  .content-band {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+  }
+
+  .content-band h3 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 54px);
+    line-height: 1;
+    font-weight: 300;
+    color: var(--gold-soft);
+    margin-bottom: 22px;
+  }
+
+  .gold-list {
+    display: grid;
+    gap: 18px;
+  }
+
+  .gold-list-item {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 16px;
+  }
+
+  .gold-list-num {
+    font-family: var(--serif);
+    color: var(--gold-muted);
+    font-size: 15px;
+  }
+
+  .gold-list-copy strong {
+    display: block;
+    color: var(--gold-soft);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    line-height: 1.7;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .gold-list-copy span {
+    display: block;
+    color: var(--ivory);
+    font-size: 12px;
+    line-height: 1.9;
+  }
+
   @media (max-width: 980px) {
     .hero { grid-template-columns: 1fr; align-items: end; }
     .hero-panel { max-width: 560px; }
     .section-heading { display: block; }
     .section-heading p { margin-top: 18px; }
     .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .content-bands { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 640px) {
@@ -328,7 +391,8 @@
       <h1>Radiance<br><em>Redefined</em></h1>
       <p class="hero-copy">
         Architectural lighting systems designed to enhance space, texture, and form.
-        At Hazen, lighting is more than illumination; it is a powerful architectural element.
+        At Hazen, lighting is more than illumination; it is a powerful architectural element
+        crafted to transform how spaces are seen and experienced.
       </p>
       <div class="hero-actions">
         <a class="hero-button" href="products.html">Browse Products</a>
@@ -339,7 +403,7 @@
     <aside class="hero-panel">
       <div class="panel-title">Layered light, intentional space.</div>
       <p class="panel-copy">
-        Hazen creates lighting environments that balance ambient, accent, and feature lighting
+        Hazen creates layered lighting environments that balance ambient, accent, and feature lighting
         to achieve depth, warmth, and visual harmony for luxury residential, commercial, and hospitality spaces.
       </p>
       <div class="signature-list">
@@ -399,6 +463,64 @@
         <div class="category-name">Pendant Lighting</div>
         <p class="category-desc">Suspended fixtures that create visual focus and depth.</p>
       </article>
+    </div>
+
+    <div class="content-bands">
+      <div class="content-band">
+        <div class="eyebrow">Product Advantages</div>
+        <h3>Engineered for performance. Designed for comfort.</h3>
+        <div class="gold-list">
+          <div class="gold-list-item">
+            <div class="gold-list-num">01</div>
+            <div class="gold-list-copy">
+              <strong>Long-lasting performance</strong>
+              <span>Fixtures tested for up to 50,000 hours of operational life.</span>
+            </div>
+          </div>
+          <div class="gold-list-item">
+            <div class="gold-list-num">02</div>
+            <div class="gold-list-copy">
+              <strong>Optimized optical comfort</strong>
+              <span>Controlled luminous output with reduced glare and balanced distribution.</span>
+            </div>
+          </div>
+          <div class="gold-list-item">
+            <div class="gold-list-num">03</div>
+            <div class="gold-list-copy">
+              <strong>Refined finishes</strong>
+              <span>Premium material treatments designed to integrate with contemporary and classic interiors.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-band">
+        <div class="eyebrow">Applications</div>
+        <h3>Light, applied with intention.</h3>
+        <div class="gold-list">
+          <div class="gold-list-item">
+            <div class="gold-list-num">01</div>
+            <div class="gold-list-copy">
+              <strong>Residential and hospitality</strong>
+              <span>Warm, elegant environments for homes, villas, apartments, and refined guest spaces.</span>
+            </div>
+          </div>
+          <div class="gold-list-item">
+            <div class="gold-list-num">02</div>
+            <div class="gold-list-copy">
+              <strong>Commercial environments</strong>
+              <span>Efficient, well-planned lighting for offices, retail spaces, and work settings.</span>
+            </div>
+          </div>
+          <div class="gold-list-item">
+            <div class="gold-list-num">03</div>
+            <div class="gold-list-copy">
+              <strong>Architecture and landscape</strong>
+              <span>Highlighting structure, texture, facades, pathways, and exterior environments.</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </main>
