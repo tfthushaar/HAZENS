@@ -111,7 +111,7 @@
       linear-gradient(315deg, rgba(240,220,158,0.06), transparent 42%),
       var(--bg);
     display: flex; align-items: center; justify-content: center;
-    transition: opacity 0.65s cubic-bezier(.4,0,.2,1), transform 0.65s cubic-bezier(.4,0,.2,1);
+    transition: opacity 0.42s cubic-bezier(.4,0,.2,1), transform 0.42s cubic-bezier(.4,0,.2,1);
   }
   #loader.done { opacity: 0; pointer-events: none; transform: translateY(-8px); }
   .loader-stage {
@@ -192,7 +192,7 @@
 
   /* Hero */
   #hero {
-    min-height: 100vh; display: block;
+    min-height: 430px; display: block;
     border-bottom: 1px solid var(--rule);
     position: relative; overflow: hidden;
     padding-top: 68px;
@@ -206,10 +206,10 @@
     pointer-events: none;
   }
   .hero-left {
-    min-height: calc(100vh - 68px);
+    min-height: 362px;
     display: flex; flex-direction: column; justify-content: center;
-    max-width: min(720px, 48vw);
-    padding: 92px 0 82px clamp(48px, 7vw, 118px);
+    max-width: min(780px, 58vw);
+    padding: 70px 0 48px clamp(48px, 7vw, 118px);
     position: relative; z-index: 2;
   }
   .hero-right {
@@ -236,21 +236,21 @@
     display: none;
   }
   .hero-top-label {
-    position: absolute; top: 104px; left: clamp(48px, 7vw, 118px); z-index: 2;
+    position: absolute; top: 94px; left: clamp(48px, 7vw, 118px); z-index: 2;
     font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
     color: rgba(240,220,158,0.8);
     opacity: 0; animation: fadeIn 1s 1.2s forwards;
   }
   .hero-year {
-    position: absolute; top: 104px; right: clamp(48px, 6vw, 96px);
+    position: absolute; top: 94px; right: clamp(48px, 6vw, 96px);
     font-family: var(--serif); font-size: 14px; letter-spacing: 0.12em;
     color: rgba(240,220,158,0.76);
     opacity: 0; animation: fadeIn 1s 1.2s forwards; z-index: 2;
   }
   .hero-title {
     font-family: var(--serif);
-    font-size: clamp(78px, 10vw, 168px);
-    font-weight: 300; line-height: 0.88;
+    font-size: clamp(52px, 6.4vw, 98px);
+    font-weight: 300; line-height: 0.94;
     letter-spacing: 0; color: var(--luxury-gold);
     text-shadow: 0 8px 32px rgba(0,0,0,0.72), 0 0 24px rgba(214,185,111,0.18);
   }
@@ -264,34 +264,14 @@
   .hero-title-line:nth-child(2) .hero-title-inner { animation-delay: 1.25s; font-style: italic; }
   .hero-bottom {
     display: block;
-    margin-top: 46px;
+    margin-top: 22px;
     opacity: 0; animation: fadeIn 1s 1.6s forwards;
   }
   .hero-desc {
-    max-width: 360px; font-size: 13px; line-height: 2;
+    max-width: 520px; font-size: 13px; line-height: 1.9;
     color: rgba(250,246,232,0.82); font-weight: 300; letter-spacing: 0.01em;
     text-shadow: 0 4px 18px rgba(0,0,0,0.68);
   }
-  .hero-scroll-indicator {
-    position: absolute; right: clamp(34px, 5vw, 78px); bottom: 70px;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    z-index: 2;
-  }
-  .hero-scroll-indicator span {
-    font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(240,220,158,0.72);
-    writing-mode: vertical-rl;
-  }
-  .hero-line-anim {
-    width: 1px; height: 60px;
-    background: var(--luxury-gold);
-    animation: lineGrow 2s 1.8s ease-out infinite;
-  }
-  @keyframes lineGrow {
-    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
-    70% { transform: scaleY(1); transform-origin: top; opacity: 1; }
-    100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
-  }
-
   @keyframes fadeIn { to { opacity: 1; } }
   @keyframes slideUp { to { transform: translateY(0); } }
 
@@ -425,73 +405,6 @@
     backdrop-filter: blur(8px);
   }
 
-  /* Interstitial brand spread */
-  .brand-spread {
-    display: grid; grid-template-columns: 1fr 1fr;
-    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    background: var(--surface);
-  }
-  .brand-spread-text {
-    padding: 96px 64px; border-right: 1px solid var(--rule);
-  }
-  .brand-eyebrow {
-    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--ink3); margin-bottom: 28px;
-  }
-  .brand-heading {
-    font-family: var(--serif);
-    font-size: clamp(36px, 4vw, 62px);
-    font-weight: 300; line-height: 1.1; margin-bottom: 28px; letter-spacing: 0;
-    color: var(--luxury-gold);
-  }
-  .brand-heading em { font-style: italic; color: var(--luxury-gold-soft); }
-  .brand-body { font-size: 13px; line-height: 2.1; color: var(--ink2); font-weight: 300; }
-  .brand-spread-advantages { padding: 64px 64px; }
-  .adv-item { padding: 24px 0; border-bottom: 1px solid var(--rule); }
-  .adv-item:first-child { padding-top: 0; }
-  .adv-item:last-child { border-bottom: none; }
-  .adv-row { display: flex; align-items: baseline; gap: 20px; margin-bottom: 6px; }
-  .adv-num { font-family: var(--serif); font-size: 13px; color: var(--ink3); font-weight: 300; min-width: 24px; }
-  .adv-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--luxury-gold-soft); }
-  .adv-text { font-size: 12px; line-height: 1.9; color: var(--ink2); padding-left: 44px; }
-
-  /* Applications */
-  .applications { border-top: 1px solid var(--rule); background: var(--surface); }
-  .app-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--rule); }
-  .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-left: 1px solid var(--rule); }
-  .app-item {
-    padding: 48px 36px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    position: relative; overflow: hidden;
-    transition: background 0.3s;
-  }
-  .app-item:hover { background: rgba(216,189,115,0.06); }
-  .app-big-num {
-    font-family: var(--serif); font-size: 72px; font-weight: 300;
-    color: rgba(216,189,115,0.2); line-height: 1; margin-bottom: 24px; letter-spacing: 0;
-  }
-  .app-title {
-    font-family: var(--serif); font-size: 28px; font-weight: 300; line-height: 1.1; margin-bottom: 16px;
-    color: var(--luxury-gold);
-  }
-  .app-title em { font-style: italic; color: var(--luxury-gold-soft); }
-  .app-desc { font-size: 12px; line-height: 1.9; color: var(--ink2); }
-
-  /* Why Hazen */
-  .why-section {
-    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    background:
-      linear-gradient(180deg, rgba(216,189,115,0.06), transparent 42%),
-      var(--bg);
-  }
-  .why-header { padding: 72px 48px 56px; border-bottom: 1px solid var(--rule); }
-  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-left: 1px solid var(--rule); }
-  .why-item {
-    padding: 44px 40px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  }
-  .why-marker { font-family: var(--serif); font-size: 10px; letter-spacing: 0.2em; color: var(--ink3); margin-bottom: 14px; text-transform: uppercase; }
-  .why-title { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 12px; line-height: 1.2; color: var(--luxury-gold-soft); }
-  .why-text { font-size: 12px; line-height: 1.9; color: var(--ink2); }
-
   /* Detail overlay */
   .detail-overlay {
     position: fixed; inset: 0; z-index: 200;
@@ -601,16 +514,16 @@
     .hero-left { max-width: min(680px, 62vw); }
   }
   @media (max-width: 768px) {
-    #hero { min-height: 100vh; }
+    #hero { min-height: 520px; }
     #hero::before { background: rgba(12,10,7,0.48); }
     .hero-left {
-      min-height: calc(100vh - 68px);
+      min-height: 452px;
       max-width: none;
-      padding: 148px 24px 62px;
+      padding: 118px 24px 46px;
       justify-content: flex-end;
     }
-    .hero-top-label { top: 104px; left: 24px; max-width: 240px; line-height: 1.8; }
-    .hero-year { top: 104px; right: 24px; }
+    .hero-top-label { top: 92px; left: 24px; max-width: 240px; line-height: 1.8; }
+    .hero-year { top: 92px; right: 24px; }
     .hero-right { inset: 68px 0 0 0; }
     .hero-right-img {
       background:
@@ -619,24 +532,14 @@
       background-position: 58% center;
       background-size: cover;
     }
-    .hero-title { font-size: clamp(62px, 18vw, 104px); }
-    .hero-bottom { margin-top: 34px; }
-    .hero-scroll-indicator { display: none; }
+    .hero-title { font-size: clamp(48px, 15vw, 76px); }
+    .hero-bottom { margin-top: 22px; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
     #categories { top: 64px; }
     .cat-tab { padding: 17px 22px; font-size: 9px; letter-spacing: 0.16em; }
     .section-header { grid-template-columns: 1fr; padding: 54px 24px 42px; gap: 28px; }
     .section-title { font-size: clamp(42px, 15vw, 72px); }
     .section-desc { max-width: none; font-size: 12px; line-height: 1.9; }
-    .brand-spread { grid-template-columns: 1fr; }
-    .brand-spread-text,
-    .brand-spread-advantages { padding: 54px 28px; }
-    .app-grid { grid-template-columns: repeat(2, 1fr); }
-    .app-header,
-    .why-header { padding: 54px 24px 42px; }
-    .app-item,
-    .why-item { padding: 34px 28px; }
-    .why-grid { grid-template-columns: repeat(2, 1fr); }
     .detail-inner { grid-template-columns: 1fr; width: 94vw; height: 88svh; overflow-y: auto; }
     .detail-img-side { min-height: 46vh; border-right: none; border-bottom: 1px solid var(--rule); }
     .detail-info-side { padding: 36px 28px; }
@@ -650,16 +553,15 @@
     .nav-logo { font-size: 18px; letter-spacing: 0.16em; }
     .nav-actions { gap: 8px; }
     .nav-cta { padding: 8px 12px; font-size: 9px; letter-spacing: 0.14em; }
-    .hero-left { padding: 136px 20px 54px; }
-    .hero-top-label { top: 92px; left: 20px; }
-    .hero-year { top: 92px; right: 20px; }
-    .hero-title { font-size: clamp(56px, 18vw, 86px); }
+    #hero { min-height: 500px; }
+    .hero-left { min-height: 436px; padding: 114px 20px 42px; }
+    .hero-top-label { top: 88px; left: 20px; }
+    .hero-year { top: 88px; right: 20px; }
+    .hero-title { font-size: clamp(46px, 15vw, 72px); }
     .hero-desc { max-width: 88vw; font-size: 12px; line-height: 1.9; }
     .product-grid { grid-template-columns: 1fr; }
     .product-img-wrap img { padding: 20px; }
     .product-info { padding: 18px 18px 22px; }
-    .app-grid,
-    .why-grid { grid-template-columns: 1fr; }
     footer {
       grid-template-columns: 1fr;
       gap: 20px;
@@ -714,6 +616,11 @@
 <div id="cursor-ring"></div>
 <div id="root"></div>
 
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    window.setTimeout(() => document.getElementById('loader')?.classList.add('done'), 550);
+  });
+</script>
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
@@ -1239,31 +1146,6 @@ function buildCatalog() {
 
 const CATEGORIES = buildCatalog();
 
-const ADVANTAGES = [
-  { num: '01', title: 'Long-Lasting Performance', text: 'Up to 50,000 hours of operational life.' },
-  { num: '02', title: 'Superior Build Quality', text: 'High-grade materials and precision engineering.' },
-  { num: '03', title: 'Anti-Glare Design', text: 'Controlled luminous output with reduced glare.' },
-  { num: '04', title: 'Uniform Output', text: 'Even distribution, no hotspots or shadows.' },
-  { num: '05', title: 'High Efficiency', text: 'Maximum output, minimal energy consumption.' },
-  { num: '06', title: 'Precision Beam Control', text: 'Advanced optics for accent and ambient use.' },
-];
-
-const APPLICATIONS = [
-  { num: '01', title: 'Residential', sub: 'Lighting', desc: 'Warm, comfortable environments for homes, villas, and apartments—balancing functionality with visual appeal.' },
-  { num: '02', title: 'Commercial', sub: 'Lighting', desc: 'Efficient lighting for offices and retail spaces designed to improve productivity while maintaining refinement.' },
-  { num: '03', title: 'Architectural', sub: 'Lighting', desc: 'Highlighting structural elements, textures and forms through carefully planned lighting techniques.' },
-  { num: '04', title: 'Outdoor', sub: '& Landscape', desc: 'Enhancing facades, pathways and outdoor environments—extending design beyond the interior.' },
-];
-
-const WHY = [
-  { title: 'Specialized Expertise', text: 'Focused purely on lighting design and execution with deep architectural knowledge.' },
-  { title: 'Design-Driven', text: 'Every solution enhances the overall space, not just the illumination level.' },
-  { title: 'Customized Solutions', text: 'Tailored designs crafted for each unique project requirement.' },
-  { title: 'Quality Fixtures', text: 'Carefully curated products ensuring longevity and consistent performance.' },
-  { title: 'Refined Finishes', text: 'Premium finishes that integrate with contemporary and classic styles.' },
-  { title: 'Attention to Detail', text: 'From initial design to final aiming, precision is the foundation.' },
-];
-
 function ProductCard({ product, catLabel, onClick }) {
   const hasVariants = product.variants.length > 1;
   return (
@@ -1383,7 +1265,7 @@ function App() {
   useEffect(() => {
     const loader = document.getElementById('loader');
     const finishLoading = () => loader && loader.classList.add('done');
-    const timer = window.setTimeout(finishLoading, 1000);
+    const timer = window.setTimeout(finishLoading, 700);
     window.addEventListener('load', finishLoading, { once: true });
     return () => {
       window.clearTimeout(timer);
@@ -1481,17 +1363,13 @@ function App() {
         <div className="hero-year">Est. 2024</div>
         <div className="hero-left">
           <h1 className="hero-title">
-            <span className="hero-title-line"><span className="hero-title-inner">Radiance</span></span>
-            <span className="hero-title-line"><span className="hero-title-inner">Redefined</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Product</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Catalogue</span></span>
           </h1>
           <div className="hero-bottom">
             <p className="hero-desc">
-              Architectural lighting systems designed to integrate seamlessly with modern spaces—enhancing materials, textures, and spatial experience.
+              Browse the complete Hazen range across downlights, wall lighting, outdoor fixtures, track systems, decorative pieces, and pendants.
             </p>
-            <div className="hero-scroll-indicator">
-              <div className="hero-line-anim"></div>
-              <span>Scroll</span>
-            </div>
           </div>
         </div>
         <div className="hero-right" aria-hidden="true">
@@ -1532,69 +1410,8 @@ function App() {
               <ProductCard key={p.sku} product={p} catLabel={cat.label} onClick={(prod, lbl) => { setDetailProduct(prod); setDetailCat(lbl); }} />
             ))}
           </div>
-
-          {/* Brand spread after Wall Lighting */}
-          {i === 1 && (
-            <div className="brand-spread">
-              <div className="brand-spread-text">
-                <div className="brand-eyebrow">Product Advantages</div>
-                <h2 className="brand-heading">Engineered for <em>performance</em>. Built to last.</h2>
-                <p className="brand-body">
-                  At Hazen Lighting, every product delivers performance, precision, and visual comfort.
-                  Our fixtures meet the demands of modern architectural spaces while maintaining consistency, durability, and refined aesthetics.
-                </p>
-              </div>
-              <div className="brand-spread-advantages">
-                {ADVANTAGES.map(a => (
-                  <div key={a.num} className="adv-item">
-                    <div className="adv-row">
-                      <span className="adv-num">{a.num}</span>
-                      <span className="adv-title">{a.title}</span>
-                    </div>
-                    <div className="adv-text">{a.text}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Applications after Tracks */}
-          {i === 3 && (
-            <div className="applications">
-              <div className="app-header">
-                <div className="brand-eyebrow">Applications</div>
-                <h2 className="brand-heading">Light, <em>applied</em><br />with intention.</h2>
-              </div>
-              <div className="app-grid">
-                {APPLICATIONS.map(a => (
-                  <div key={a.num} className="app-item">
-                    <div className="app-big-num">{a.num}</div>
-                    <div className="app-title">{a.title}<br /><em>{a.sub}</em></div>
-                    <div className="app-desc">{a.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </section>
       ))}
-
-      {/* Why Hazen */}
-      <section className="why-section">
-        <div className="why-header">
-          <div className="brand-eyebrow">Why Hazen</div>
-          <h2 className="brand-heading">More than<br /><em>illumination.</em></h2>
-        </div>
-        <div className="why-grid">
-          {WHY.map((w, i) => (
-            <div key={w.title} className="why-item">
-              <div className="why-marker">{String(i + 1).padStart(2, '0')}</div>
-              <div className="why-title">{w.title}</div>
-              <div className="why-text">{w.text}</div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Footer */}
       <footer>
