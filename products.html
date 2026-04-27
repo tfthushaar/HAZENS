@@ -551,21 +551,26 @@
     border: 1px solid var(--product-rule); padding: 8px 10px;
   }
   .variant-strip {
-    display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
-    scrollbar-width: none; margin-bottom: 24px;
+    display: flex; gap: 12px; overflow-x: auto;
+    padding: 4px 2px 8px;
+    scrollbar-width: none; margin-bottom: 28px;
   }
   .variant-strip::-webkit-scrollbar { display: none; }
   .variant-thumb {
-    flex: 0 0 68px; width: 68px; height: 68px;
+    flex: 0 0 82px; width: 82px; height: 82px;
     background: #fff; border: 1px solid var(--product-rule);
     display: flex; align-items: center; justify-content: center;
-    cursor: none; transition: border-color 0.2s, transform 0.2s;
+    cursor: none; transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .variant-thumb.active { border-color: var(--gold); transform: translateY(-2px); }
-  .variant-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
-  .variant-help {
-    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink3); margin: -8px 0 24px;
+  .variant-thumb.active {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px rgba(216,189,115,0.36);
+  }
+  .variant-thumb img {
+    display: block;
+    width: auto; height: auto;
+    max-width: 78%; max-height: 78%;
+    object-fit: contain;
   }
   .detail-info-side {
     padding: 60px 52px; display: flex; flex-direction: column; justify-content: center;
@@ -684,7 +689,7 @@
     .footer-copy { text-align: left; }
     .detail-name { font-size: 38px; }
     .detail-img-side { min-height: 42vh; }
-    .variant-thumb { flex-basis: 58px; width: 58px; height: 58px; }
+    .variant-thumb { flex-basis: 68px; width: 68px; height: 68px; }
     .loader-stage { width: min(84vw, 360px); gap: 22px; }
     .loader-aperture { height: 66px; }
   }
@@ -1523,7 +1528,6 @@ function DetailOverlay({ product, catLabel, onClose }) {
                   </button>
                 ))}
               </div>
-              <div className="variant-help">Scroll horizontally for all versions</div>
             </>}
             <div className="detail-tags">
               <span className="detail-tag">50,000h Lifespan</span>
