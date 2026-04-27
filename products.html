@@ -81,7 +81,7 @@
     cursor: none; text-transform: uppercase;
   }
   .nav-links { display: flex; gap: 32px; align-items: center; }
-  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .nav-actions { display: flex; align-items: center; gap: 12px; position: relative; }
   .nav-link {
     font-family: var(--sans); font-size: 10px; font-weight: 400; letter-spacing: 0.18em;
     text-transform: uppercase; color: var(--ink3); text-decoration: none;
@@ -102,6 +102,112 @@
     transition: background 0.25s, color 0.25s;
   }
   .nav-cta:hover { background: rgba(216,189,115,0.14); color: var(--luxury-gold-soft); }
+
+  .search-wrap { position: relative; }
+  .search-trigger.active { background: rgba(216,189,115,0.16); color: var(--luxury-gold-soft); }
+  .search-panel {
+    position: absolute;
+    top: calc(100% + 16px);
+    right: 0;
+    width: min(430px, calc(100vw - 32px));
+    padding: 16px;
+    border: 1px solid rgba(216,189,115,0.36);
+    background: rgba(7,6,4,0.96);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.52), 0 0 34px rgba(216,189,115,0.08);
+  }
+  .search-panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 18px; right: 18px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(240,220,158,0.72), transparent);
+  }
+  .search-input {
+    width: 100%;
+    height: 44px;
+    border: 1px solid rgba(216,189,115,0.34);
+    background: rgba(15,13,9,0.78);
+    color: var(--luxury-gold-soft);
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    outline: none;
+    padding: 0 14px;
+    cursor: none;
+  }
+  .search-input::placeholder {
+    color: rgba(240,220,158,0.48);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 9px;
+  }
+  .search-results {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+    max-height: min(420px, 62vh);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(216,189,115,0.56) transparent;
+  }
+  .search-result {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(216,189,115,0.16);
+    background: rgba(255,255,255,0.03);
+    color: var(--ink2);
+    text-align: left;
+    cursor: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .search-result:hover,
+  .search-result:focus-visible {
+    border-color: rgba(240,220,158,0.48);
+    background: rgba(216,189,115,0.08);
+    transform: translateY(-1px);
+    outline: none;
+  }
+  .search-thumb {
+    width: 56px; height: 56px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .search-thumb img {
+    width: 100%; height: 100%; object-fit: contain; padding: 7px;
+  }
+  .search-name {
+    display: block;
+    font-family: var(--serif);
+    color: var(--luxury-gold-soft);
+    font-size: 18px;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+  .search-meta,
+  .search-count,
+  .search-empty {
+    display: block;
+    font-family: var(--sans);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .search-meta { margin-top: 5px; }
+  .search-count { white-space: nowrap; color: rgba(240,220,158,0.58); }
+  .search-empty {
+    border: 1px solid rgba(216,189,115,0.14);
+    padding: 18px 14px;
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+  }
+  .product-card.is-search-target {
+    box-shadow: inset 0 0 0 2px rgba(216,189,115,0.82), 0 0 42px rgba(216,189,115,0.22);
+    z-index: 2;
+  }
 
   /* Loading screen */
   #loader {
@@ -544,9 +650,22 @@
 
   @media (max-width: 560px) {
     nav { padding: 0 16px; }
-    .nav-logo { font-size: 18px; letter-spacing: 0.16em; }
-    .nav-actions { gap: 8px; }
-    .nav-cta { padding: 8px 12px; font-size: 9px; letter-spacing: 0.14em; }
+    .nav-logo { font-size: 17px; letter-spacing: 0.14em; }
+    .nav-actions { gap: 6px; }
+    .nav-cta { padding: 7px 8px; font-size: 8px; letter-spacing: 0.12em; }
+    .search-panel {
+      position: fixed;
+      top: 66px;
+      left: 12px;
+      right: 12px;
+      width: auto;
+    }
+    .search-result {
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+    }
+    .search-thumb { width: 48px; height: 48px; }
+    .search-count { grid-column: 2; }
     .hero-left { padding: 136px 20px 54px; }
     .hero-top-label { top: 92px; left: 20px; }
     .hero-year { top: 92px; right: 20px; }
@@ -578,7 +697,9 @@
     button,
     .product-card,
     .variant-thumb,
-    .detail-close { cursor: auto; }
+    .detail-close,
+    .search-input,
+    .search-result { cursor: auto; }
     .product-card:hover .product-img-wrap img { transform: none; }
   }
 
@@ -1198,10 +1319,122 @@ function buildCatalog() {
 
 const CATEGORIES = buildCatalog();
 
-function ProductCard({ product, catLabel, onClick }) {
+const normalizeSearch = value => String(value || '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+
+const productDomId = product => `product-${normalizeSearch(product?.id || product?.sku).replace(/\s+/g, '-')}`;
+
+const PRODUCT_SEARCH_INDEX = CATEGORIES.flatMap(category => category.products.map(product => {
+  const variantText = product.variants
+    .map(variant => `${variant.sku} ${variant.finish} ${variant.file}`)
+    .join(' ');
+  const searchText = normalizeSearch([
+    product.sku,
+    product.name,
+    product.finish,
+    category.label,
+    category.short,
+    category.titleLine1,
+    category.titleLine2,
+    variantText,
+  ].join(' '));
+  return { product, categoryId: category.id, categoryLabel: category.label, searchText };
+}));
+
+function scoreSearchResult(item, query) {
+  const normalized = normalizeSearch(query);
+  if (!normalized) return -1;
+  const tokens = normalized.split(/\s+/).filter(Boolean);
+  if (!tokens.every(token => item.searchText.includes(token))) return -1;
+
+  const sku = normalizeSearch(item.product.sku);
+  const name = normalizeSearch(item.product.name);
+  let score = 10;
+  if (sku === normalized) score += 120;
+  if (sku.startsWith(normalized)) score += 70;
+  if (name.startsWith(normalized)) score += 55;
+  if (name.includes(normalized)) score += 35;
+  score -= Math.max(0, name.length - normalized.length) * 0.02;
+  return score;
+}
+
+function SearchPanel({ open, onClose, onSelect }) {
+  const [query, setQuery] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) setQuery('');
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 40);
+    const onKey = event => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const results = PRODUCT_SEARCH_INDEX
+    .map(item => ({ ...item, score: scoreSearchResult(item, query) }))
+    .filter(item => item.score >= 0)
+    .sort((a, b) => b.score - a.score || a.product.name.localeCompare(b.product.name, undefined, { numeric: true, sensitivity: 'base' }))
+    .slice(0, 8);
+
+  const submitSearch = event => {
+    event.preventDefault();
+    if (results[0]) onSelect(results[0]);
+  };
+
+  return (
+    <div className="search-panel" role="dialog" aria-label="Product search">
+      <form onSubmit={submitSearch}>
+        <input
+          ref={inputRef}
+          className="search-input"
+          value={query}
+          onChange={event => setQuery(event.target.value)}
+          placeholder="Search SKU, finish, category"
+          aria-label="Search products"
+        />
+      </form>
+      {query.trim() && (
+        <div className="search-results">
+          {results.length ? results.map(item => (
+            <button
+              key={item.product.id}
+              type="button"
+              className="search-result"
+              onClick={() => onSelect(item)}>
+              <span className="search-thumb"><img src={item.product.img} alt="" /></span>
+              <span>
+                <span className="search-name">{item.product.name}</span>
+                <span className="search-meta">{item.product.sku} / {item.categoryLabel}</span>
+              </span>
+              <span className="search-count">{item.product.variants.length} version{item.product.variants.length === 1 ? '' : 's'}</span>
+            </button>
+          )) : (
+            <div className="search-empty">No matching product</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductCard({ product, catLabel, onClick, isHighlighted }) {
   const hasVariants = product.variants.length > 1;
   return (
-    <div className={`product-card${hasVariants ? ' has-variants' : ''}`} onClick={() => onClick(product, catLabel)}>
+    <div
+      id={productDomId(product)}
+      className={`product-card${hasVariants ? ' has-variants' : ''}${isHighlighted ? ' is-search-target' : ''}`}
+      onClick={() => onClick(product, catLabel)}>
       <div className="product-img-wrap">
         <img src={product.img} alt={product.name} loading="lazy" />
         {hasVariants && <div className="variant-count">{product.variants.length} versions</div>}
@@ -1310,9 +1543,13 @@ function App() {
   const [activeId, setActiveId] = useState(null);
   const [detailProduct, setDetailProduct] = useState(null);
   const [detailCat, setDetailCat] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [highlightedProductId, setHighlightedProductId] = useState(null);
   const ringPos = useRef({ x: 0, y: 0 });
   const cursorPos = useRef({ x: 0, y: 0 });
   const rafRef = useRef(null);
+  const searchWrapRef = useRef(null);
+  const highlightTimerRef = useRef(null);
 
   useEffect(() => {
     const loader = document.getElementById('loader');
@@ -1324,6 +1561,19 @@ function App() {
       window.removeEventListener('load', finishLoading);
     };
   }, []);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onPointerDown = event => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(event.target)) {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', onPointerDown);
+    return () => window.removeEventListener('mousedown', onPointerDown);
+  }, [searchOpen]);
+
+  useEffect(() => () => window.clearTimeout(highlightTimerRef.current), []);
 
   // Cursor
   useEffect(() => {
@@ -1390,6 +1640,21 @@ function App() {
     }
   };
 
+  const scrollToProduct = item => {
+    setSearchOpen(false);
+    setActiveId(item.categoryId);
+    setHighlightedProductId(item.product.id);
+    window.clearTimeout(highlightTimerRef.current);
+    window.setTimeout(() => {
+      const el = document.getElementById(productDomId(item.product));
+      if (el) {
+        const offset = el.getBoundingClientRect().top + window.scrollY - 88;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }, 20);
+    highlightTimerRef.current = window.setTimeout(() => setHighlightedProductId(null), 3200);
+  };
+
   return (
     <>
       {/* Nav */}
@@ -1404,6 +1669,16 @@ function App() {
           ))}
         </div>
         <div className="nav-actions">
+          <div className="search-wrap" ref={searchWrapRef}>
+            <button
+              type="button"
+              className={`nav-cta search-trigger${searchOpen ? ' active' : ''}`}
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen(open => !open)}>
+              Search
+            </button>
+            <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={scrollToProduct} />
+          </div>
           <a className="nav-cta" href="index.html">Home</a>
           <button className="nav-cta">Enquire</button>
         </div>
@@ -1453,7 +1728,13 @@ function App() {
 
           <div className="product-grid">
             {cat.products.map(p => (
-              <ProductCard key={p.sku} product={p} catLabel={cat.label} onClick={(prod, lbl) => { setDetailProduct(prod); setDetailCat(lbl); }} />
+              <ProductCard
+                key={p.sku}
+                product={p}
+                catLabel={cat.label}
+                isHighlighted={highlightedProductId === p.id}
+                onClick={(prod, lbl) => { setDetailProduct(prod); setDetailCat(lbl); }}
+              />
             ))}
           </div>
         </section>
