@@ -1159,6 +1159,9 @@
         });
 
         const particles = new THREE.Points(geometry, material);
+        const getSceneOffsetX = () => window.innerWidth <= 768 ? 0.15 : 0.85;
+        let sceneOffsetX = getSceneOffsetX();
+        particles.position.x = sceneOffsetX;
         scene.add(particles);
 
         // === MORPHING ===
@@ -1291,6 +1294,7 @@
 
             // Gentle float
             particles.rotation.y = elapsed * 0.05;
+            particles.position.x = sceneOffsetX;
             particles.position.y = Math.sin(elapsed * 0.3) * 0.05;
 
             // Light animation
@@ -1311,6 +1315,7 @@
         }
 
         window.addEventListener('resize', () => {
+            sceneOffsetX = getSceneOffsetX();
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
