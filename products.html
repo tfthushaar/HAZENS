@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
-<title>Hazen — Radiance Redefined</title>
+<title>Hazen - Product Catalogue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -294,30 +294,6 @@
   @keyframes fadeIn { to { opacity: 1; } }
   @keyframes slideUp { to { transform: translateY(0); } }
 
-  /* Category tabs */
-  #categories {
-    position: sticky; top: 60px; z-index: 90;
-    background: rgba(7,6,4,0.94);
-    border-bottom: 1px solid var(--rule);
-    display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none;
-  }
-  #categories::-webkit-scrollbar { display: none; }
-  .cat-tab {
-    padding: 20px 30px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink3); background: none; border: none; cursor: none;
-    white-space: nowrap; position: relative; transition: color 0.2s;
-    font-family: var(--sans); font-weight: 400; border-right: 1px solid var(--rule);
-  }
-  .cat-tab:first-child { border-left: none; }
-  .cat-tab::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-    background: var(--luxury-gold-soft); transform: scaleX(0);
-    transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
-  }
-  .cat-tab:hover { color: var(--luxury-gold-soft); }
-  .cat-tab.active { color: var(--luxury-gold-soft); }
-  .cat-tab.active::after { transform: scaleX(1); }
-
   /* Section */
   .cat-section {
     border-bottom: 1px solid var(--rule);
@@ -555,8 +531,6 @@
     .hero-bottom { margin-top: 34px; }
     .hero-scroll-indicator { display: none; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
-    #categories { top: 58px; }
-    .cat-tab { padding: 17px 22px; font-size: 9px; letter-spacing: 0.16em; }
     .section-header { grid-template-columns: 1fr; padding: 54px 24px 42px; gap: 28px; }
     .section-title { font-size: clamp(42px, 15vw, 72px); }
     .section-desc { max-width: none; font-size: 12px; line-height: 1.9; }
@@ -1045,6 +1019,14 @@ const PRODUCT_NAMES = {
   pendants: 'Pendant Light',
 };
 
+const formatModelCode = value => value
+  .replace(/-TRACK$/i, '')
+  .replace(/-CORNERS$/i, ' Corner')
+  .replace(/-/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .toUpperCase();
+
 const titleCase = value => value
   .replace(/\s+/g, ' ')
   .trim()
@@ -1094,19 +1076,70 @@ function deriveCategoryId(file, sku) {
 }
 
 function productNameFor(categoryId, groupKey) {
-  if (/^DL|^DLC/.test(groupKey)) return 'Recessed Downlight';
-  if (/^SLC/.test(groupKey)) return 'Ceiling Spotlight';
-  if (/^SL/.test(groupKey)) return 'Surface Spotlight';
-  if (/^CL7/.test(groupKey)) return 'Compact Ceiling Light';
-  if (/^WLB/.test(groupKey)) return 'Wall Bracket';
-  if (/^FL/.test(groupKey)) return 'Step / Floor Light';
-  if (/^OL/.test(groupKey)) return 'Outdoor Light';
-  if (/^TL/.test(groupKey)) return 'Track Light';
-  if (/^TD/.test(groupKey)) return 'Track Decorative';
-  if (/^HL/.test(groupKey)) return 'Pendant';
-  if (/^MLL/.test(groupKey)) return 'Decorative Linear';
-  if (/^LL/.test(groupKey)) return 'Linear Lighting';
-  return PRODUCT_NAMES[categoryId] || 'Lighting Fixture';
+  const code = formatModelCode(groupKey);
+  if (/^DLC/.test(groupKey)) return `${code} Ceiling Downlight`;
+  if (/^DL/.test(groupKey)) return `${code} Recessed Downlight`;
+  if (/^SLC/.test(groupKey)) return `${code} Ceiling Spotlight`;
+  if (/^SL/.test(groupKey)) return `${code} Surface Spotlight`;
+  if (/^CL7/.test(groupKey)) return `${code} Compact Ceiling Light`;
+  if (/^WLB/.test(groupKey)) return `${code} Wall Bracket Light`;
+  if (/^FL/.test(groupKey)) return `${code} Step / Floor Light`;
+  if (/^OL/.test(groupKey)) return `${code} Outdoor Light`;
+  if (/^CL-[MQW]-TRACK/.test(groupKey)) return `${code} Track Rail`;
+  if (/^GD-[MNQ]48V-TRACK/.test(groupKey)) return `${code} Magnetic Track Rail`;
+  if (/^GD-[MNQ]48V-CORNERS/.test(groupKey)) return `${code} Track Corner Connector`;
+  if (/^CL-POWER-HEAD/.test(groupKey)) return `${code} Track Power Head`;
+  if (/^GD-(?:A2|CORNER|MOUNTING|POWER|TRACK)/.test(groupKey)) return `${code} Track Accessory`;
+  if (/^TL/.test(groupKey)) return `${code} Track Spotlight`;
+  if (/^TD/.test(groupKey)) return `${code} Track Decorative Light`;
+  if (/^HL/.test(groupKey)) return `${code} Pendant Light`;
+  if (/^MLL/.test(groupKey)) return `${code} Decorative Linear Light`;
+  if (/^LL/.test(groupKey)) return `${code} Linear Light`;
+  if (/^GD/.test(groupKey)) return `${code} Decorative Fixture`;
+  return `${code} ${PRODUCT_NAMES[categoryId] || 'Lighting Fixture'}`;
+}
+
+function productDescriptionFor(product, catLabel, variant) {
+  const sku = (variant?.sku || product?.sku || '').toUpperCase();
+  const finish = variant?.finish || product?.finish || 'selected finish';
+  const name = product?.name || 'This fixture';
+  if (/^DLC|^DL/.test(sku)) {
+    return `${name} is a recessed downlight for clean ceiling integration, controlled beam output, and low-glare architectural illumination. The ${finish} version is suited to refined residential, hospitality, and commercial interiors.`;
+  }
+  if (/^SLC|^SL/.test(sku)) {
+    return `${name} is designed for focused accent lighting, display highlights, and directional ceiling illumination. Its ${finish} finish keeps the fixture visually restrained while delivering precise light placement.`;
+  }
+  if (/^CL7/.test(sku)) {
+    return `${name} is a compact ceiling light for tight layouts and minimal visual intrusion. It supports general lighting needs where a small profile and controlled output are essential.`;
+  }
+  if (/^WLB/.test(sku)) {
+    return `${name} shapes vertical surfaces with soft architectural light, ideal for corridors, feature walls, bedside zones, and facade-like interior moments. The ${finish} finish keeps the wall detail refined.`;
+  }
+  if (/^OL/.test(sku)) {
+    return `${name} is an exterior-rated lighting fixture for facades, pathways, landscape edges, and outdoor architectural accents. The ${finish} version is selected for durable, discreet exterior installations.`;
+  }
+  if (/^FL/.test(sku)) {
+    return `${name} is made for step, floor, and low-level guide lighting where glare control and safe visual orientation matter. Its ${finish} finish blends into architectural surfaces.`;
+  }
+  if (/^(CL-|GD-[MNQ]48V|GD-A2|GD-CORNER|GD-MOUNTING|GD-POWER|GD-TRACK)/.test(sku)) {
+    return `${name} is a track and profile component for building modular lighting runs with clean alignment, flexible placement, and seamless architectural integration.`;
+  }
+  if (/^TL/.test(sku)) {
+    return `${name} is a track-mounted spotlight for adjustable accent lighting, retail display, galleries, and flexible interior scenes where beam direction needs to change over time.`;
+  }
+  if (/^TD/.test(sku)) {
+    return `${name} adds a decorative element to track systems while preserving the flexibility of modular lighting. It works well for layered interiors that need both focus and atmosphere.`;
+  }
+  if (/^HL/.test(sku)) {
+    return `${name} is a suspended pendant for visual focus over lounges, dining zones, reception areas, and hospitality spaces. The ${finish} finish gives the fixture a polished architectural presence.`;
+  }
+  if (/^MLL|^LL/.test(sku)) {
+    return `${name} is a decorative linear light for continuous visual rhythm, indirect glow, and elegant feature lighting across walls, ceilings, or joinery details.`;
+  }
+  if (/^GD/.test(sku)) {
+    return `${name} is a decorative lighting fixture for statement moments, ambient layering, and refined focal points within luxury interiors.`;
+  }
+  return `${name} belongs to the ${catLabel} range and is selected for architectural light quality, controlled output, and a refined ${finish} finish.`;
 }
 
 function deriveVariantLabel(file, sku) {
@@ -1243,7 +1276,7 @@ function DetailOverlay({ product, catLabel, onClose }) {
             <div className="detail-sku">{currentVariant?.sku || product.sku}</div>
             <div className="detail-rule"></div>
             <div className="detail-body">
-              Precision-engineered for architectural environments where every beam, highlight, and shadow is intentional. Crafted for controlled output, refined finish, and seamless integration with modern interiors.
+              {productDescriptionFor(product, catLabel, currentVariant)}
             </div>
             {variants.length > 1 && <>
               <div className="variant-strip">
@@ -1352,7 +1385,7 @@ function App() {
     setActiveId(id);
     const el = document.getElementById('cat-' + id);
     if (el) {
-      const offset = el.getBoundingClientRect().top + window.scrollY - 130;
+      const offset = el.getBoundingClientRect().top + window.scrollY - 84;
       window.scrollTo({ top: offset, behavior: 'smooth' });
     }
   };
@@ -1382,12 +1415,12 @@ function App() {
         <div className="hero-year">Est. 2024</div>
         <div className="hero-left">
           <h1 className="hero-title">
-            <span className="hero-title-line"><span className="hero-title-inner">Radiance</span></span>
-            <span className="hero-title-line"><span className="hero-title-inner">Redefined</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Product</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Catalogue</span></span>
           </h1>
           <div className="hero-bottom">
             <p className="hero-desc">
-              Architectural lighting systems designed to integrate seamlessly with modern spaces—enhancing materials, textures, and spatial experience.
+              Explore the full Hazen catalogue across downlights, wall lighting, outdoor fixtures, track systems, decorative lighting, and pendants.
             </p>
             <div className="hero-scroll-indicator">
               <div className="hero-line-anim"></div>
@@ -1401,16 +1434,6 @@ function App() {
           <div className="hero-right-vignette"></div>
         </div>
       </section>
-
-      {/* Category tabs */}
-      <div id="categories">
-        {CATEGORIES.map(c => (
-          <button key={c.id} className={`cat-tab${activeId === c.id ? ' active' : ''}`}
-            onClick={() => scrollToCategory(c.id)}>
-            {c.label}
-          </button>
-        ))}
-      </div>
 
       {/* Product Sections */}
       {CATEGORIES.map((cat, i) => (
