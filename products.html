@@ -72,9 +72,8 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 48px; height: 68px;
-    background: rgba(7,6,4,0.78);
+    background: rgba(7,6,4,0.9);
     border-bottom: 1px solid var(--rule);
-    backdrop-filter: blur(12px);
   }
   .nav-logo {
     font-family: var(--serif); font-size: 20px; font-weight: 400;
@@ -108,64 +107,87 @@
   #loader {
     position: fixed; inset: 0; z-index: 1000;
     background:
-      radial-gradient(circle at 50% 42%, rgba(240,220,158,0.16) 0%, rgba(13,11,8,0.94) 36%, rgba(7,6,4,0.98) 100%);
+      linear-gradient(135deg, rgba(216,189,115,0.08), transparent 38%),
+      linear-gradient(315deg, rgba(240,220,158,0.06), transparent 42%),
+      var(--bg);
     display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 32px;
-    transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1);
+    transition: opacity 0.65s cubic-bezier(.4,0,.2,1), transform 0.65s cubic-bezier(.4,0,.2,1);
   }
   #loader.done { opacity: 0; pointer-events: none; transform: translateY(-8px); }
+  .loader-stage {
+    display: grid;
+    justify-items: center;
+    gap: 26px;
+    width: min(74vw, 420px);
+  }
   .loader-brand {
-    font-family: var(--serif); font-size: 28px; font-weight: 300;
-    letter-spacing: 0.28em; text-transform: uppercase; color: var(--luxury-gold-soft);
+    font-family: var(--serif); font-size: clamp(30px, 6vw, 46px); font-weight: 300;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--luxury-gold-soft);
     text-shadow: 0 0 30px rgba(216,189,115,0.28);
     opacity: 0; animation: fadeIn 0.8s 0.2s forwards;
   }
-  .loader-light {
-    position: relative; width: 190px; height: 2px;
-    background: linear-gradient(to right, transparent, rgba(216,189,115,0.35), transparent);
+  .loader-aperture {
+    position: relative;
+    width: 100%;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: visible;
     opacity: 0; animation: fadeIn 0.5s 0.5s forwards;
   }
-  .loader-beam {
-    position: absolute; top: 0; left: -10%; height: 2px; width: 34%;
-    background: linear-gradient(to right, transparent, #fff5c8, var(--gold), transparent);
-    box-shadow: 0 0 18px rgba(216,189,115,0.64), 0 0 46px rgba(255,240,190,0.32);
-    animation: beamSlide 1.85s 0.5s cubic-bezier(.4,0,.2,1) infinite;
+  .loader-aperture::before {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(216,189,115,0.5), rgba(255,245,199,0.95), rgba(216,189,115,0.5), transparent);
+    box-shadow: 0 0 18px rgba(216,189,115,0.36);
   }
-  .loader-glow {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 92px; height: 92px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,245,205,0.42) 0%, rgba(216,189,115,0.18) 32%, transparent 72%);
-    animation: glowPulse 2.4s 0.5s ease-in-out infinite;
+  .loader-aperture::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    bottom: 14px;
+    width: 38px;
+    background: linear-gradient(90deg, transparent, rgba(255,248,213,0.72), transparent);
+    transform: translateX(-180px) skewX(-12deg);
+    animation: apertureSweep 1.55s cubic-bezier(.4,0,.2,1) infinite;
   }
-  .loader-rays {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 100px; height: 100px;
+  .loader-line {
+    width: 38%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(216,189,115,0.6));
   }
-  .loader-ray {
-    position: absolute; top: 50%; left: 50%;
-    width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(176,141,87,0.4), transparent);
-    transform-origin: top center;
-    animation: rayFade 2s 0.5s ease-in-out infinite;
+  .loader-line:last-child {
+    transform: scaleX(-1);
+  }
+  .loader-core {
+    width: 18px;
+    height: 18px;
+    margin: 0 18px;
+    border: 1px solid rgba(240,220,158,0.9);
+    transform: rotate(45deg);
+    box-shadow: 0 0 18px rgba(216,189,115,0.42);
+    animation: corePulse 1.55s ease-in-out infinite;
   }
   .loader-counter {
-    font-family: var(--serif); font-size: 11px; letter-spacing: 0.2em;
+    font-family: var(--sans); font-size: 10px; letter-spacing: 0.24em;
+    text-transform: uppercase;
     color: var(--ink3); font-weight: 300;
     opacity: 0; animation: fadeIn 0.5s 0.7s forwards;
   }
-  @keyframes beamSlide {
-    0% { left: -30%; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { left: 110%; opacity: 0; }
+  @keyframes apertureSweep {
+    0% { transform: translateX(-190px) skewX(-12deg); opacity: 0; }
+    18% { opacity: 1; }
+    82% { opacity: 1; }
+    100% { transform: translateX(190px) skewX(-12deg); opacity: 0; }
   }
-  @keyframes glowPulse {
-    0%, 100% { opacity: 0.4; transform: translate(-50%,-50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%,-50%) scale(1.4); }
-  }
-  @keyframes rayFade {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 0.8; }
+  @keyframes corePulse {
+    0%, 100% { transform: rotate(45deg) scale(0.82); opacity: 0.72; }
+    50% { transform: rotate(45deg) scale(1.18); opacity: 1; }
   }
 
   /* Hero */
@@ -276,7 +298,7 @@
   /* Category tabs */
   #categories {
     position: sticky; top: 68px; z-index: 90;
-    background: rgba(7,6,4,0.86); backdrop-filter: blur(12px);
+    background: rgba(7,6,4,0.94);
     border-bottom: 1px solid var(--rule);
     display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none;
   }
@@ -601,33 +623,92 @@
     .hero-bottom { margin-top: 34px; }
     .hero-scroll-indicator { display: none; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
-    .section-header { grid-template-columns: 1fr; }
+    #categories { top: 64px; }
+    .cat-tab { padding: 17px 22px; font-size: 9px; letter-spacing: 0.16em; }
+    .section-header { grid-template-columns: 1fr; padding: 54px 24px 42px; gap: 28px; }
+    .section-title { font-size: clamp(42px, 15vw, 72px); }
+    .section-desc { max-width: none; font-size: 12px; line-height: 1.9; }
     .brand-spread { grid-template-columns: 1fr; }
+    .brand-spread-text,
+    .brand-spread-advantages { padding: 54px 28px; }
     .app-grid { grid-template-columns: repeat(2, 1fr); }
+    .app-header,
+    .why-header { padding: 54px 24px 42px; }
+    .app-item,
+    .why-item { padding: 34px 28px; }
     .why-grid { grid-template-columns: repeat(2, 1fr); }
-    .detail-inner { grid-template-columns: 1fr; height: 88vh; overflow-y: auto; }
+    .detail-inner { grid-template-columns: 1fr; width: 94vw; height: 88svh; overflow-y: auto; }
     .detail-img-side { min-height: 46vh; border-right: none; border-bottom: 1px solid var(--rule); }
     .detail-info-side { padding: 36px 28px; }
     .detail-variant-panel img { padding: 42px; }
-    nav { padding: 0 24px; }
+    nav { height: 64px; padding: 0 24px; }
     .nav-links { display: none; }
+  }
+
+  @media (max-width: 560px) {
+    nav { padding: 0 16px; }
+    .nav-logo { font-size: 18px; letter-spacing: 0.16em; }
+    .nav-actions { gap: 8px; }
+    .nav-cta { padding: 8px 12px; font-size: 9px; letter-spacing: 0.14em; }
+    .hero-left { padding: 136px 20px 54px; }
+    .hero-top-label { top: 92px; left: 20px; }
+    .hero-year { top: 92px; right: 20px; }
+    .hero-title { font-size: clamp(56px, 18vw, 86px); }
+    .hero-desc { max-width: 88vw; font-size: 12px; line-height: 1.9; }
+    .product-grid { grid-template-columns: 1fr; }
+    .product-img-wrap img { padding: 20px; }
+    .product-info { padding: 18px 18px 22px; }
+    .app-grid,
+    .why-grid { grid-template-columns: 1fr; }
+    footer {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 44px 24px;
+      text-align: left;
+    }
+    .footer-mid { text-align: left; }
+    .footer-copy { text-align: left; }
+    .detail-name { font-size: 38px; }
+    .detail-img-side { min-height: 42vh; }
+    .variant-thumb { flex-basis: 58px; width: 58px; height: 58px; }
+    .loader-stage { width: min(84vw, 360px); gap: 22px; }
+    .loader-aperture { height: 66px; }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    body { cursor: auto; }
+    #cursor,
+    #cursor-ring { display: none !important; }
+    a,
+    button,
+    .product-card,
+    .variant-thumb,
+    .detail-close { cursor: auto; }
+    .product-card:hover .product-img-wrap img { transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 </style>
 </head>
 <body>
 <div id="loader" role="status" aria-label="Loading Hazen catalogue">
-  <div class="loader-brand">Hazen</div>
-  <div class="loader-light">
-    <div class="loader-glow"></div>
-    <div class="loader-rays">
-      <div class="loader-ray" style="transform: rotate(0deg);"></div>
-      <div class="loader-ray" style="transform: rotate(45deg);"></div>
-      <div class="loader-ray" style="transform: rotate(90deg);"></div>
-      <div class="loader-ray" style="transform: rotate(135deg);"></div>
+  <div class="loader-stage">
+    <div class="loader-brand">Hazen</div>
+    <div class="loader-aperture" aria-hidden="true">
+      <span class="loader-line"></span>
+      <span class="loader-core"></span>
+      <span class="loader-line"></span>
     </div>
-    <div class="loader-beam"></div>
+    <div class="loader-counter">Preparing Catalogue</div>
   </div>
-  <div class="loader-counter">Architectural Light</div>
 </div>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -1302,7 +1383,7 @@ function App() {
   useEffect(() => {
     const loader = document.getElementById('loader');
     const finishLoading = () => loader && loader.classList.add('done');
-    const timer = window.setTimeout(finishLoading, 1400);
+    const timer = window.setTimeout(finishLoading, 1000);
     window.addEventListener('load', finishLoading, { once: true });
     return () => {
       window.clearTimeout(timer);
@@ -1312,9 +1393,16 @@ function App() {
 
   // Cursor
   useEffect(() => {
+    const supportsCustomCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursor-ring');
     if (!cursor || !ring) return;
+    if (!supportsCustomCursor) {
+      cursor.remove();
+      ring.remove();
+      document.body.classList.remove('cursor-hover', 'cursor-open');
+      return;
+    }
     const onMove = e => {
       cursorPos.current = { x: e.clientX, y: e.clientY };
       cursor.style.left = e.clientX + 'px';
@@ -1332,11 +1420,19 @@ function App() {
     window.addEventListener('mousemove', onMove);
     const onEnter = () => document.body.classList.add('cursor-hover');
     const onLeave = () => document.body.classList.remove('cursor-hover');
-    document.querySelectorAll('button, a, .product-card, .variant-thumb').forEach(el => {
+    const hoverTargets = document.querySelectorAll('button, a, .product-card, .variant-thumb');
+    hoverTargets.forEach(el => {
       el.addEventListener('mouseenter', onEnter);
       el.addEventListener('mouseleave', onLeave);
     });
-    return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(rafRef.current); };
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      hoverTargets.forEach(el => {
+        el.removeEventListener('mouseenter', onEnter);
+        el.removeEventListener('mouseleave', onLeave);
+      });
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   // Active section tracking
