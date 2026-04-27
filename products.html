@@ -71,12 +71,12 @@
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 48px; height: 68px;
+    padding: 0 40px; height: 60px;
     background: rgba(7,6,4,0.9);
     border-bottom: 1px solid var(--rule);
   }
   .nav-logo {
-    font-family: var(--serif); font-size: 20px; font-weight: 400;
+    font-family: var(--serif); font-size: 18px; font-weight: 400;
     letter-spacing: 0.18em; color: var(--luxury-gold-soft); text-decoration: none;
     cursor: none; text-transform: uppercase;
   }
@@ -97,7 +97,7 @@
   .nav-cta {
     font-family: var(--sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
     border: 1px solid rgba(216,189,115,0.62); color: var(--luxury-gold-soft);
-    padding: 9px 22px; background: none; cursor: none;
+    padding: 8px 18px; background: none; cursor: none;
     text-decoration: none;
     transition: background 0.25s, color 0.25s;
   }
@@ -192,28 +192,28 @@
 
   /* Hero */
   #hero {
-    min-height: 430px; display: block;
+    min-height: 100vh; display: block;
     border-bottom: 1px solid var(--rule);
     position: relative; overflow: hidden;
-    padding-top: 68px;
+    padding-top: 60px;
     background: #100f0d;
   }
   #hero::before {
     content: '';
-    position: absolute; inset: 68px 0 0;
+    position: absolute; inset: 60px 0 0;
     z-index: 1;
     background: rgba(12,10,7,0.34);
     pointer-events: none;
   }
   .hero-left {
-    min-height: 362px;
+    min-height: calc(100vh - 60px);
     display: flex; flex-direction: column; justify-content: center;
-    max-width: min(780px, 58vw);
-    padding: 70px 0 48px clamp(48px, 7vw, 118px);
+    max-width: min(720px, 48vw);
+    padding: 92px 0 82px clamp(48px, 7vw, 118px);
     position: relative; z-index: 2;
   }
   .hero-right {
-    position: absolute; inset: 68px 0 0;
+    position: absolute; inset: 60px 0 0;
     overflow: hidden;
     background: #11110f;
     z-index: 0;
@@ -236,21 +236,21 @@
     display: none;
   }
   .hero-top-label {
-    position: absolute; top: 94px; left: clamp(48px, 7vw, 118px); z-index: 2;
+    position: absolute; top: 104px; left: clamp(48px, 7vw, 118px); z-index: 2;
     font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
     color: rgba(240,220,158,0.8);
     opacity: 0; animation: fadeIn 1s 1.2s forwards;
   }
   .hero-year {
-    position: absolute; top: 94px; right: clamp(48px, 6vw, 96px);
+    position: absolute; top: 104px; right: clamp(48px, 6vw, 96px);
     font-family: var(--serif); font-size: 14px; letter-spacing: 0.12em;
     color: rgba(240,220,158,0.76);
     opacity: 0; animation: fadeIn 1s 1.2s forwards; z-index: 2;
   }
   .hero-title {
     font-family: var(--serif);
-    font-size: clamp(52px, 6.4vw, 98px);
-    font-weight: 300; line-height: 0.94;
+    font-size: clamp(78px, 10vw, 168px);
+    font-weight: 300; line-height: 0.88;
     letter-spacing: 0; color: var(--luxury-gold);
     text-shadow: 0 8px 32px rgba(0,0,0,0.72), 0 0 24px rgba(214,185,111,0.18);
   }
@@ -264,20 +264,39 @@
   .hero-title-line:nth-child(2) .hero-title-inner { animation-delay: 1.25s; font-style: italic; }
   .hero-bottom {
     display: block;
-    margin-top: 22px;
+    margin-top: 46px;
     opacity: 0; animation: fadeIn 1s 1.6s forwards;
   }
   .hero-desc {
-    max-width: 520px; font-size: 13px; line-height: 1.9;
+    max-width: 360px; font-size: 13px; line-height: 2;
     color: rgba(250,246,232,0.82); font-weight: 300; letter-spacing: 0.01em;
     text-shadow: 0 4px 18px rgba(0,0,0,0.68);
+  }
+  .hero-scroll-indicator {
+    position: absolute; right: clamp(34px, 5vw, 78px); bottom: 70px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    z-index: 2;
+  }
+  .hero-scroll-indicator span {
+    font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(240,220,158,0.72);
+    writing-mode: vertical-rl;
+  }
+  .hero-line-anim {
+    width: 1px; height: 60px;
+    background: var(--luxury-gold);
+    animation: lineGrow 2s 1.8s ease-out infinite;
+  }
+  @keyframes lineGrow {
+    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    70% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+    100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
   }
   @keyframes fadeIn { to { opacity: 1; } }
   @keyframes slideUp { to { transform: translateY(0); } }
 
   /* Category tabs */
   #categories {
-    position: sticky; top: 68px; z-index: 90;
+    position: sticky; top: 60px; z-index: 90;
     background: rgba(7,6,4,0.94);
     border-bottom: 1px solid var(--rule);
     display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none;
@@ -514,17 +533,17 @@
     .hero-left { max-width: min(680px, 62vw); }
   }
   @media (max-width: 768px) {
-    #hero { min-height: 520px; }
+    #hero { min-height: 100vh; padding-top: 58px; }
     #hero::before { background: rgba(12,10,7,0.48); }
     .hero-left {
-      min-height: 452px;
+      min-height: calc(100vh - 58px);
       max-width: none;
-      padding: 118px 24px 46px;
+      padding: 148px 24px 62px;
       justify-content: flex-end;
     }
-    .hero-top-label { top: 92px; left: 24px; max-width: 240px; line-height: 1.8; }
-    .hero-year { top: 92px; right: 24px; }
-    .hero-right { inset: 68px 0 0 0; }
+    .hero-top-label { top: 104px; left: 24px; max-width: 240px; line-height: 1.8; }
+    .hero-year { top: 104px; right: 24px; }
+    .hero-right { inset: 58px 0 0 0; }
     .hero-right-img {
       background:
         url('images/hero-backdrop.jpg'),
@@ -532,10 +551,11 @@
       background-position: 58% center;
       background-size: cover;
     }
-    .hero-title { font-size: clamp(48px, 15vw, 76px); }
-    .hero-bottom { margin-top: 22px; }
+    .hero-title { font-size: clamp(62px, 18vw, 104px); }
+    .hero-bottom { margin-top: 34px; }
+    .hero-scroll-indicator { display: none; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
-    #categories { top: 64px; }
+    #categories { top: 58px; }
     .cat-tab { padding: 17px 22px; font-size: 9px; letter-spacing: 0.16em; }
     .section-header { grid-template-columns: 1fr; padding: 54px 24px 42px; gap: 28px; }
     .section-title { font-size: clamp(42px, 15vw, 72px); }
@@ -544,7 +564,7 @@
     .detail-img-side { min-height: 46vh; border-right: none; border-bottom: 1px solid var(--rule); }
     .detail-info-side { padding: 36px 28px; }
     .detail-variant-panel img { padding: 42px; }
-    nav { height: 64px; padding: 0 24px; }
+    nav { height: 58px; padding: 0 24px; }
     .nav-links { display: none; }
   }
 
@@ -553,11 +573,10 @@
     .nav-logo { font-size: 18px; letter-spacing: 0.16em; }
     .nav-actions { gap: 8px; }
     .nav-cta { padding: 8px 12px; font-size: 9px; letter-spacing: 0.14em; }
-    #hero { min-height: 500px; }
-    .hero-left { min-height: 436px; padding: 114px 20px 42px; }
-    .hero-top-label { top: 88px; left: 20px; }
-    .hero-year { top: 88px; right: 20px; }
-    .hero-title { font-size: clamp(46px, 15vw, 72px); }
+    .hero-left { padding: 136px 20px 54px; }
+    .hero-top-label { top: 92px; left: 20px; }
+    .hero-year { top: 92px; right: 20px; }
+    .hero-title { font-size: clamp(56px, 18vw, 86px); }
     .hero-desc { max-width: 88vw; font-size: 12px; line-height: 1.9; }
     .product-grid { grid-template-columns: 1fr; }
     .product-img-wrap img { padding: 20px; }
@@ -1363,13 +1382,17 @@ function App() {
         <div className="hero-year">Est. 2024</div>
         <div className="hero-left">
           <h1 className="hero-title">
-            <span className="hero-title-line"><span className="hero-title-inner">Product</span></span>
-            <span className="hero-title-line"><span className="hero-title-inner">Catalogue</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Radiance</span></span>
+            <span className="hero-title-line"><span className="hero-title-inner">Redefined</span></span>
           </h1>
           <div className="hero-bottom">
             <p className="hero-desc">
-              Browse the complete Hazen range across downlights, wall lighting, outdoor fixtures, track systems, decorative pieces, and pendants.
+              Architectural lighting systems designed to integrate seamlessly with modern spaces—enhancing materials, textures, and spatial experience.
             </p>
+            <div className="hero-scroll-indicator">
+              <div className="hero-line-anim"></div>
+              <span>Scroll</span>
+            </div>
           </div>
         </div>
         <div className="hero-right" aria-hidden="true">
