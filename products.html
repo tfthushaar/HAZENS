@@ -807,9 +807,17 @@
 <div id="root"></div>
 
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    window.setTimeout(() => document.getElementById('loader')?.classList.add('done'), 550);
-  });
+  window.HAZEN_LOADER_STARTED_AT = performance.now();
+  window.HAZEN_LOADER_MIN_MS = 1500;
+  window.HAZEN_FINISH_LOADER = () => {
+    const loader = document.getElementById('loader');
+    if (!loader || loader.classList.contains('done')) return;
+    const elapsed = performance.now() - window.HAZEN_LOADER_STARTED_AT;
+    const delay = Math.max(0, window.HAZEN_LOADER_MIN_MS - elapsed);
+    window.clearTimeout(window.HAZEN_LOADER_TIMER);
+    window.HAZEN_LOADER_TIMER = window.setTimeout(() => loader.classList.add('done'), delay);
+  };
+  window.addEventListener('DOMContentLoaded', window.HAZEN_FINISH_LOADER, { once: true });
 </script>
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
@@ -1782,11 +1790,18 @@ function App() {
 
   useEffect(() => {
     const loader = document.getElementById('loader');
-    const finishLoading = () => loader && loader.classList.add('done');
-    const timer = window.setTimeout(finishLoading, 700);
+    const finishLoading = () => {
+      if (window.HAZEN_FINISH_LOADER) {
+        window.HAZEN_FINISH_LOADER();
+        return;
+      }
+      if (loader) loader.classList.add('done');
+    };
+    const timer = window.setTimeout(finishLoading, window.HAZEN_LOADER_MIN_MS || 1500);
     window.addEventListener('load', finishLoading, { once: true });
     return () => {
       window.clearTimeout(timer);
+      window.clearTimeout(window.HAZEN_LOADER_TIMER);
       window.removeEventListener('load', finishLoading);
     };
   }, []);
