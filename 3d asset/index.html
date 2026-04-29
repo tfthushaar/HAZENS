@@ -1154,9 +1154,9 @@
         });
 
         const particles = new THREE.Points(geometry, material);
-        const getSceneOffsetX = () => window.innerWidth <= 768 ? 0.55 : 0.85;
-        const getSceneOffsetY = () => window.innerWidth <= 768 ? 0.78 : 0;
-        const getSceneScale = () => window.innerWidth <= 768 ? 0.54 : 1;
+        const getSceneOffsetX = () => window.innerWidth <= 768 ? 0 : 1.32;
+        const getSceneOffsetY = () => window.innerWidth <= 768 ? 0.86 : 0;
+        const getSceneScale = () => window.innerWidth <= 768 ? 0.42 : 1;
         let sceneOffsetX = getSceneOffsetX();
         let sceneOffsetY = getSceneOffsetY();
         let sceneScale = getSceneScale();
