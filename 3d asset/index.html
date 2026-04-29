@@ -11,13 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
         :root {
-            --c-bg: #0e0e0e;
-            --c-surface: #1a1a1a;
-            --c-text: #e8e4de;
-            --c-text-dim: #7a756d;
-            --c-accent: #c4a882;
-            --c-accent2: #8b7355;
-            --c-highlight: #f0ebe3;
+            --c-bg: transparent;
+            --c-surface: rgba(255,255,252,0.5);
+            --c-text: #111110;
+            --c-text-dim: rgba(17,17,16,0.58);
+            --c-accent: #111110;
+            --c-accent2: rgba(17,17,16,0.36);
+            --c-highlight: #111110;
             
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Space Grotesk', sans-serif;
@@ -43,6 +43,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 0;
+            background: transparent;
         }
 
         .layer-blur {
@@ -480,16 +481,9 @@
         }
 
         @media (max-width: 768px) {
-            .morph-info {
-                right: 1.5rem;
-                bottom: 5rem;
-                display: flex !important;
-            }
-
+            .morph-info,
             .footer {
-                right: 1.5rem;
-                bottom: 2rem;
-                padding: 0;
+                display: none !important;
             }
         }
     </style>
@@ -565,14 +559,15 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 2.5;
         renderer.powerPreference = 'high-performance';
         container.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0e0e0e);
-        scene.fog = new THREE.FogExp2(0x0e0e0e, 0.02);
+        scene.background = null;
+        scene.fog = null;
 
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(0, 0, 5);
@@ -1042,9 +1037,9 @@
         // Initialize with first shape
         positions.set(shapes[0]);
 
-        const c1 = new THREE.Color(0xf0d9b5);
-        const c2 = new THREE.Color(0xd4a574);
-        const c3 = new THREE.Color(0x7eb8e0);
+        const c1 = new THREE.Color(0x0f0f0e);
+        const c2 = new THREE.Color(0x27231d);
+        const c3 = new THREE.Color(0x453d32);
 
         for (let i = 0; i < PARTICLE_COUNT; i++) {
             const ratio = i / PARTICLE_COUNT;
@@ -1148,20 +1143,26 @@
                     float d = length(gl_PointCoord - vec2(0.5));
                     if (d > 0.5) discard;
                     float alpha = smoothstep(0.5, 0.0, d) * vAlpha;
-                    vec3 brightColor = vColor * 2.2 + 0.15;
-                    gl_FragColor = vec4(brightColor, alpha);
+                    vec3 particleColor = vColor;
+                    gl_FragColor = vec4(particleColor, alpha * 0.82);
                 }
             `,
             transparent: true,
             depthWrite: false,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             vertexColors: true,
         });
 
         const particles = new THREE.Points(geometry, material);
-        const getSceneOffsetX = () => window.innerWidth <= 768 ? 0.15 : 0.85;
+        const getSceneOffsetX = () => window.innerWidth <= 768 ? 0 : 1.32;
+        const getSceneOffsetY = () => window.innerWidth <= 768 ? 0.86 : 0;
+        const getSceneScale = () => window.innerWidth <= 768 ? 0.42 : 1;
         let sceneOffsetX = getSceneOffsetX();
+        let sceneOffsetY = getSceneOffsetY();
+        let sceneScale = getSceneScale();
         particles.position.x = sceneOffsetX;
+        particles.position.y = sceneOffsetY;
+        particles.scale.setScalar(sceneScale);
         scene.add(particles);
 
         // === MORPHING ===
@@ -1295,7 +1296,7 @@
             // Gentle float
             particles.rotation.y = elapsed * 0.05;
             particles.position.x = sceneOffsetX;
-            particles.position.y = Math.sin(elapsed * 0.3) * 0.05;
+            particles.position.y = sceneOffsetY + Math.sin(elapsed * 0.3) * 0.05;
 
             // Light animation
             const sinT = Math.sin(elapsed * 0.2);
@@ -1316,6 +1317,9 @@
 
         window.addEventListener('resize', () => {
             sceneOffsetX = getSceneOffsetX();
+            sceneOffsetY = getSceneOffsetY();
+            sceneScale = getSceneScale();
+            particles.scale.setScalar(sceneScale);
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
