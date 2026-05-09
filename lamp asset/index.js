@@ -1,12 +1,20 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Scene setup
+THREE.ColorManagement.enabled = true;
+
 const isCompactViewport = window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
-const maxPixelRatio = isCompactViewport ? 1.2 : 1.5;
-const radialSegments = isCompactViewport ? 24 : 40;
-const ringSegments = isCompactViewport ? 32 : 48;
+const maxPixelRatio = isCompactViewport ? 1.35 : 2;
+const radialSegments = isCompactViewport ? 32 : 64;
+const ringSegments = isCompactViewport ? 48 : 80;
 const shadowSize = isCompactViewport ? 512 : 1024;
+const cameraTarget = new THREE.Vector3(0, 0.5, 0);
+const MIN_KELVIN = 2700;
+const MAX_KELVIN = 6500;
+const DEFAULT_KELVIN = 3460;
+const MIN_LUMENS = 150;
+const MAX_LUMENS = 3000;
+const DEFAULT_LUMENS = 850;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
@@ -28,37 +36,30 @@ renderer.shadowMap.enabled = !isCompactViewport;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 const root = document.getElementById('root') ?? document.body;
 root.appendChild(renderer.domElement);
-
-// Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 2.5;
-controls.maxDistance = 9;
-controls.maxPolarAngle = Math.PI * 0.85;
-controls.target.set(0, 0.5, 0);
-controls.update();
+renderer.domElement.style.touchAction = 'none';
 
 function applyResponsiveCamera() {
   const isMobile = window.innerWidth <= 720;
   camera.fov = isMobile ? 52 : 45;
   camera.position.set(isMobile ? 0.85 : 1.35, isMobile ? 0.95 : 1.1, isMobile ? 7.0 : 6.1);
-  controls.target.set(0, isMobile ? 0.35 : 0.5, 0);
-  controls.minDistance = isMobile ? 3.4 : 2.5;
-  controls.maxDistance = isMobile ? 10 : 9;
+  cameraTarget.set(0, isMobile ? 0.35 : 0.5, 0);
+  camera.lookAt(cameraTarget);
   camera.updateProjectionMatrix();
-  controls.update();
 }
 applyResponsiveCamera();
 
 // ---- COLOR TEMPERATURE SYSTEM ----
-let colorTemp = 0.3; // 0 = warm (2700K), 1 = cool (6500K)
-let targetColorTemp = 0.3;
+let currentKelvin = DEFAULT_KELVIN;
+let targetKelvin = DEFAULT_KELVIN;
+let currentLumens = DEFAULT_LUMENS;
+let targetLumens = DEFAULT_LUMENS;
 
 function kelvinToRGB(kelvin) {
-  const temp = kelvin / 100;
+  const clampedKelvin = THREE.MathUtils.clamp(kelvin, MIN_KELVIN, MAX_KELVIN);
+  const temp = clampedKelvin / 100;
   let r, g, b;
   if (temp <= 66) {
     r = 255;
@@ -69,20 +70,26 @@ function kelvinToRGB(kelvin) {
     g = 288.1221695283 * Math.pow(temp - 60, -0.0755148492);
     b = 255;
   }
-  return new THREE.Color(
-    Math.min(255, Math.max(0, r)) / 255,
-    Math.min(255, Math.max(0, g)) / 255,
-    Math.min(255, Math.max(0, b)) / 255
+  const color = new THREE.Color();
+  color.setRGB(
+    THREE.MathUtils.clamp(r, 0, 255) / 255,
+    THREE.MathUtils.clamp(g, 0, 255) / 255,
+    THREE.MathUtils.clamp(b, 0, 255) / 255,
+    THREE.SRGBColorSpace
   );
+  return color;
+}
+
+function getTemperaturePosition(kelvin = currentKelvin) {
+  return THREE.MathUtils.clamp((kelvin - MIN_KELVIN) / (MAX_KELVIN - MIN_KELVIN), 0, 1);
 }
 
 function getLampColor() {
-  const kelvin = 2700 + colorTemp * (6500 - 2700);
-  return kelvinToRGB(kelvin);
+  return kelvinToRGB(currentKelvin);
 }
 
 function getKelvinValue() {
-  return Math.round(2700 + colorTemp * (6500 - 2700));
+  return Math.round(currentKelvin);
 }
 
 // ---- ROOM GEOMETRY ----
@@ -314,10 +321,93 @@ rimLight.name = 'rimLight';
 rimLight.position.set(3, 4, -2);
 scene.add(rimLight);
 
+// ---- DARK KITCHEN INTERIOR ----
+const kitchenGroup = new THREE.Group();
+kitchenGroup.name = 'darkKitchenInterior';
+scene.add(kitchenGroup);
+
+const stoneMat = new THREE.MeshStandardMaterial({
+  color: 0x171411,
+  roughness: 0.46,
+  metalness: 0.08,
+});
+const cabinetMat = new THREE.MeshStandardMaterial({
+  color: 0x0b0907,
+  roughness: 0.64,
+  metalness: 0.04,
+});
+const walnutMat = new THREE.MeshStandardMaterial({
+  color: 0x24160d,
+  roughness: 0.58,
+  metalness: 0.02,
+});
+const bronzeMat = new THREE.MeshStandardMaterial({
+  color: 0x8f6b36,
+  roughness: 0.28,
+  metalness: 0.72,
+});
+const backsplashMat = new THREE.MeshStandardMaterial({
+  color: 0x0e0d0b,
+  roughness: 0.38,
+  metalness: 0.18,
+});
+
+function addBox(name, width, height, depth, x, y, z, material, parent = kitchenGroup) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+  mesh.name = name;
+  mesh.position.set(x, y, z);
+  mesh.castShadow = !isCompactViewport;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+const islandTop = addBox('kitchenIslandStoneTop', 3.9, 0.16, 1.45, 0, -0.94, 0.28, stoneMat);
+islandTop.castShadow = false;
+addBox('kitchenIslandBase', 3.35, 0.56, 1.05, 0, -1.25, 0.32, cabinetMat);
+addBox('kitchenIslandInsetFront', 2.95, 0.36, 0.035, 0, -1.23, 0.865, walnutMat);
+addBox('kitchenIslandToeKick', 3.0, 0.08, 0.86, 0, -1.53, 0.32, walnutMat);
+addBox('islandFrontBronzeLine', 3.25, 0.012, 0.012, 0, -1.04, 0.91, bronzeMat);
+addBox('islandLeftBronzeLine', 0.012, 0.012, 1.2, -1.8, -1.04, 0.32, bronzeMat);
+addBox('islandRightBronzeLine', 0.012, 0.012, 1.2, 1.8, -1.04, 0.32, bronzeMat);
+
+for (let i = -1; i <= 1; i++) {
+  addBox(`islandPanelDivider_${i}`, 0.012, 0.32, 0.018, i * 0.95, -1.24, 0.89, bronzeMat);
+  addBox(`islandDrawerPull_${i}`, 0.34, 0.018, 0.018, i * 0.95, -1.17, 0.92, bronzeMat);
+}
+
+addBox('rearCounterBase', 5.8, 0.55, 0.62, 0, -1.21, -5.22, cabinetMat);
+addBox('rearCounterTop', 6.1, 0.12, 0.72, 0, -0.87, -5.15, stoneMat);
+addBox('rearBacksplash', 6.1, 1.2, 0.04, 0, -0.23, -5.62, backsplashMat);
+addBox('upperCabinetBank', 5.9, 0.84, 0.22, 0, 0.92, -5.54, cabinetMat);
+addBox('floatingBronzeShelf', 4.4, 0.04, 0.34, 0, 0.28, -5.32, bronzeMat);
+
+for (let i = -3; i <= 3; i++) {
+  addBox(`rearCabinetReveal_${i}`, 0.012, 0.76, 0.024, i * 0.82, 0.92, -5.40, bronzeMat);
+  addBox(`baseCabinetReveal_${i}`, 0.012, 0.42, 0.024, i * 0.82, -1.19, -4.86, bronzeMat);
+}
+
+const vesselMat = new THREE.MeshStandardMaterial({
+  color: 0x2b2117,
+  roughness: 0.52,
+  metalness: 0.12,
+});
+const vesselGeo = new THREE.CylinderGeometry(0.16, 0.11, 0.18, radialSegments);
+const vessel = new THREE.Mesh(vesselGeo, vesselMat);
+vessel.name = 'counterVessel';
+vessel.position.set(-2.2, -0.71, -5.05);
+vessel.castShadow = !isCompactViewport;
+kitchenGroup.add(vessel);
+
+const lowAccentLight = new THREE.PointLight(0xd6a763, 0.55, 5, 2.4);
+lowAccentLight.name = 'kitchenWarmAccent';
+lowAccentLight.position.set(-2.3, -0.55, -4.95);
+scene.add(lowAccentLight);
+
 // ---- ROTARY DIAL CONTROLLER ----
 const dialGroup = new THREE.Group();
 dialGroup.name = 'dialController';
-dialGroup.position.set(1.8, 0.05, 1.5);
+dialGroup.position.set(1.42, 0.62, 1.05);
 scene.add(dialGroup);
 
 // Base platform
@@ -433,8 +523,8 @@ led.name = 'dialLED';
 led.position.set(0, -1.27, -0.18);
 dialGroup.add(led);
 
-// ---- FLOOR LIGHT POOL (subtle circle of light on floor) ----
-const poolGeo = new THREE.CircleGeometry(2.0, ringSegments);
+// ---- COUNTERTOP LIGHT POOL ----
+const poolGeo = new THREE.CircleGeometry(1.75, ringSegments);
 const poolMat = new THREE.MeshStandardMaterial({
   color: getLampColor(),
   emissive: getLampColor(),
@@ -447,7 +537,7 @@ const poolMat = new THREE.MeshStandardMaterial({
 const pool = new THREE.Mesh(poolGeo, poolMat);
 pool.name = 'lightPool';
 pool.rotation.x = -Math.PI / 2;
-pool.position.y = -1.49;
+pool.position.set(0, -0.852, 0.28);
 scene.add(pool);
 
 // ---- UI OVERLAY ----
@@ -463,7 +553,7 @@ uiContainer.style.cssText = `
   align-items: center;
   gap: 12px;
   z-index: 100;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   user-select: none;
 `;
 document.body.appendChild(uiContainer);
@@ -472,13 +562,13 @@ document.body.appendChild(uiContainer);
 const kelvinDisplay = document.createElement('div');
 kelvinDisplay.className = 'temperature-readout';
 kelvinDisplay.style.cssText = `
-  color: #888;
+  color: #b9a678;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 2px;
   text-transform: uppercase;
 `;
-kelvinDisplay.textContent = `${getKelvinValue()}K`;
+kelvinDisplay.textContent = `${getKelvinValue()}K / ${Math.round(currentLumens)} lm`;
 uiContainer.appendChild(kelvinDisplay);
 
 // Slider track
@@ -504,9 +594,10 @@ sliderContainer.appendChild(warmLabel);
 const slider = document.createElement('input');
 slider.className = 'temperature-range';
 slider.type = 'range';
-slider.min = '0';
-slider.max = '100';
-slider.value = '30';
+slider.min = String(MIN_KELVIN);
+slider.max = String(MAX_KELVIN);
+slider.step = '50';
+slider.value = String(DEFAULT_KELVIN);
 slider.style.cssText = `
   -webkit-appearance: none;
   appearance: none;
@@ -523,6 +614,93 @@ const coolLabel = document.createElement('span');
 coolLabel.textContent = '6500K';
 coolLabel.style.cssText = 'color: #a0b8d4; font-size: 11px; font-weight: 500; letter-spacing: 1px;';
 sliderContainer.appendChild(coolLabel);
+
+const inputRow = document.createElement('div');
+inputRow.className = 'temperature-input-row';
+inputRow.style.cssText = `
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: min(360px, 88vw);
+`;
+uiContainer.appendChild(inputRow);
+
+function addMetricInput(labelText, unitText, config) {
+  const wrap = document.createElement('label');
+  wrap.className = 'temperature-metric';
+  wrap.style.cssText = `
+    display: grid;
+    gap: 6px;
+    color: #8d7a52;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  `;
+
+  const labelTextNode = document.createElement('span');
+  labelTextNode.textContent = labelText;
+  wrap.appendChild(labelTextNode);
+
+  const fieldWrap = document.createElement('span');
+  fieldWrap.className = 'temperature-number-wrap';
+  fieldWrap.style.cssText = `
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    border: 1px solid rgba(214,185,111,0.28);
+    background: rgba(10,10,10,0.74);
+  `;
+
+  const input = document.createElement('input');
+  input.className = 'temperature-number';
+  input.type = 'number';
+  input.min = String(config.min);
+  input.max = String(config.max);
+  input.step = String(config.step);
+  input.value = String(config.value);
+  input.inputMode = 'numeric';
+  input.style.cssText = `
+    width: 100%;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #f1dfad;
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    outline: none;
+    text-align: center;
+  `;
+  fieldWrap.appendChild(input);
+
+  const unit = document.createElement('span');
+  unit.textContent = unitText;
+  unit.style.cssText = `
+    padding-right: 11px;
+    color: #6f6040;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  `;
+  fieldWrap.appendChild(unit);
+
+  wrap.appendChild(fieldWrap);
+  inputRow.appendChild(wrap);
+  return input;
+}
+
+const kelvinInput = addMetricInput('Colour temperature', 'K', {
+  min: MIN_KELVIN,
+  max: MAX_KELVIN,
+  step: 50,
+  value: DEFAULT_KELVIN,
+});
+
+const lumenInput = addMetricInput('Luminous output', 'lm', {
+  min: MIN_LUMENS,
+  max: MAX_LUMENS,
+  step: 50,
+  value: DEFAULT_LUMENS,
+});
 
 // Style the slider thumb
 const styleSheet = document.createElement('style');
@@ -569,6 +747,21 @@ styleSheet.textContent = `
     .temperature-readout {
       font-size: 11px !important;
     }
+    .temperature-input-row {
+      width: min(92vw, 360px) !important;
+      gap: 8px !important;
+    }
+    .temperature-metric {
+      font-size: 7px !important;
+      letter-spacing: 0.12em !important;
+    }
+    .temperature-number-wrap {
+      min-height: 31px !important;
+    }
+    .temperature-number {
+      height: 29px !important;
+      font-size: 10px !important;
+    }
     .temperature-label {
       font-size: 8px !important;
       letter-spacing: 2px !important;
@@ -590,19 +783,61 @@ label.style.cssText = `
 label.textContent = 'Colour Temperature';
 uiContainer.appendChild(label);
 
-// Event
+function setTargetKelvin(value, syncControls = true) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return;
+  targetKelvin = Math.round(THREE.MathUtils.clamp(parsed, MIN_KELVIN, MAX_KELVIN));
+  if (syncControls) {
+    slider.value = String(targetKelvin);
+    kelvinInput.value = String(targetKelvin);
+  }
+}
+
+function setTargetLumens(value, syncControls = true) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return;
+  targetLumens = Math.round(THREE.MathUtils.clamp(parsed, MIN_LUMENS, MAX_LUMENS));
+  if (syncControls) {
+    lumenInput.value = String(targetLumens);
+  }
+}
+
 slider.addEventListener('input', (e) => {
-  targetColorTemp = parseInt(e.target.value) / 100;
+  setTargetKelvin(e.target.value, false);
+  kelvinInput.value = String(targetKelvin);
+});
+
+kelvinInput.addEventListener('input', (e) => {
+  if (e.target.value === '') return;
+  setTargetKelvin(e.target.value);
+});
+kelvinInput.addEventListener('blur', (e) => {
+  setTargetKelvin(e.target.value || DEFAULT_KELVIN);
+});
+
+lumenInput.addEventListener('input', (e) => {
+  if (e.target.value === '') return;
+  setTargetLumens(e.target.value, false);
+});
+lumenInput.addEventListener('blur', (e) => {
+  setTargetLumens(e.target.value || DEFAULT_LUMENS);
 });
 
 // ---- UPDATE FUNCTION ----
 function updateLampColor() {
-  colorTemp += (targetColorTemp - colorTemp) * 0.05;
+  currentKelvin += (targetKelvin - currentKelvin) * 0.06;
+  currentLumens += (targetLumens - currentLumens) * 0.08;
+
   const color = getLampColor();
+  const temperaturePosition = getTemperaturePosition(currentKelvin);
+  const warmth = 1 - temperaturePosition;
+  const lumenFactor = THREE.MathUtils.clamp(currentLumens / DEFAULT_LUMENS, 0.18, 3.6);
+  const perceivedOutput = Math.sqrt(lumenFactor);
 
   lampLight.color.copy(color);
   fillLight.color.copy(color);
   spotLight.color.copy(color);
+  lowAccentLight.color.copy(color);
 
   diffuserMat.emissive.copy(color);
   glowMat.color.copy(color);
@@ -611,41 +846,32 @@ function updateLampColor() {
   poolMat.color.copy(color);
   poolMat.emissive.copy(color);
 
-  kelvinDisplay.textContent = `${getKelvinValue()}K`;
+  kelvinDisplay.textContent = `${getKelvinValue()}K / ${Math.round(currentLumens)} lm`;
 
   // Rotate dial indicator
-  const dialAngle = colorTemp * Math.PI * 1.5 - Math.PI * 0.75;
+  const dialAngle = temperaturePosition * Math.PI * 1.5 - Math.PI * 0.75;
   indicator.position.x = Math.cos(-dialAngle) * 0.1;
   indicator.position.z = Math.sin(-dialAngle) * 0.1;
   indicator.rotation.y = dialAngle;
 
-  const warmth = 1 - colorTemp;
+  lampLight.intensity = (9.5 + warmth * 4.8) * perceivedOutput;
+  fillLight.intensity = (1.6 + warmth * 0.9) * perceivedOutput;
+  spotLight.intensity = (13 + warmth * 5.8) * perceivedOutput;
+  lowAccentLight.intensity = (0.3 + warmth * 0.2) * Math.min(perceivedOutput, 1.7);
+  diffuserMat.emissiveIntensity = 0.95 + perceivedOutput * 0.9;
 
-  // Adjust light intensity subtly
-  lampLight.intensity = 12 + warmth * 6;
-  spotLight.intensity = 16 + warmth * 8;
+  glowMat.opacity = THREE.MathUtils.clamp(0.045 * perceivedOutput, 0.035, 0.16);
+  coneMat.opacity = THREE.MathUtils.clamp((0.008 + warmth * 0.014) * perceivedOutput, 0.008, 0.06);
 
-  // Adjust volumetric cone opacity
-  coneMat.opacity = 0.012 + warmth * 0.015;
-
-  // Pool glow
-  poolMat.opacity = 0.2 + warmth * 0.2;
-  poolMat.emissiveIntensity = 0.1 + warmth * 0.15;
+  poolMat.opacity = THREE.MathUtils.clamp((0.18 + warmth * 0.18) * perceivedOutput, 0.16, 0.72);
+  poolMat.emissiveIntensity = THREE.MathUtils.clamp((0.1 + warmth * 0.14) * perceivedOutput, 0.08, 0.5);
 }
 
 // ---- ANIMATION LOOP ----
-const clock = new THREE.Clock();
 let simulatorReadyAnnounced = false;
 
 function animate() {
-  const elapsed = clock.getElapsedTime();
-
-  // Subtle lamp sway
-  lampGroup.rotation.z = Math.sin(elapsed * 0.3) * 0.003;
-  lampGroup.rotation.x = Math.cos(elapsed * 0.25) * 0.002;
-
   updateLampColor();
-  controls.update();
   renderer.render(scene, camera);
 
   if (!simulatorReadyAnnounced) {
