@@ -285,10 +285,10 @@ fillLight.position.set(0, -0.3, 0);
 lampGroup.add(fillLight);
 
 // Spotlight for dramatic cone
-const spotLight = new THREE.SpotLight(getLampColor(), 20, 8, Math.PI * 0.35, 0.6, 1.5);
+const spotLight = new THREE.SpotLight(getLampColor(), 20, 7.5, Math.PI * 0.23, 0.72, 1.65);
 spotLight.name = 'spotLight';
 spotLight.position.set(0, -0.1, 0);
-spotLight.target.position.set(0, -5, 0);
+spotLight.target.position.set(0, -3.24, 0);
 spotLight.castShadow = true;
 spotLight.shadow.mapSize.width = shadowSize;
 spotLight.shadow.mapSize.height = shadowSize;
@@ -297,7 +297,7 @@ lampGroup.add(spotLight);
 lampGroup.add(spotLight.target);
 
 // Volumetric light cone (visible beam)
-const coneGeo = new THREE.CylinderGeometry(0.30, 1.8, 4.0, radialSegments, 1, true);
+const coneGeo = new THREE.CylinderGeometry(0.24, 0.92, 3.05, radialSegments, 1, true);
 const coneMat = new THREE.MeshBasicMaterial({
   color: getLampColor(),
   transparent: true,
@@ -307,7 +307,7 @@ const coneMat = new THREE.MeshBasicMaterial({
 });
 const lightCone = new THREE.Mesh(coneGeo, coneMat);
 lightCone.name = 'lightCone';
-lightCone.position.y = -2.2;
+lightCone.position.y = -1.69;
 lampGroup.add(lightCone);
 
 // Ambient light (very dim)
@@ -321,38 +321,48 @@ rimLight.name = 'rimLight';
 rimLight.position.set(3, 4, -2);
 scene.add(rimLight);
 
-// ---- DARK KITCHEN INTERIOR ----
-const kitchenGroup = new THREE.Group();
-kitchenGroup.name = 'darkKitchenInterior';
-scene.add(kitchenGroup);
+// ---- DARK LIVING ROOM INTERIOR ----
+const livingRoomGroup = new THREE.Group();
+livingRoomGroup.name = 'darkLivingRoomInterior';
+scene.add(livingRoomGroup);
 
-const stoneMat = new THREE.MeshStandardMaterial({
-  color: 0x171411,
-  roughness: 0.46,
-  metalness: 0.08,
-});
-const cabinetMat = new THREE.MeshStandardMaterial({
-  color: 0x0b0907,
-  roughness: 0.64,
-  metalness: 0.04,
+const charcoalFabricMat = new THREE.MeshStandardMaterial({
+  color: 0x11100e,
+  roughness: 0.82,
+  metalness: 0.0,
 });
 const walnutMat = new THREE.MeshStandardMaterial({
-  color: 0x24160d,
+  color: 0x24170f,
   roughness: 0.58,
   metalness: 0.02,
 });
+const deepWoodMat = new THREE.MeshStandardMaterial({
+  color: 0x130d09,
+  roughness: 0.5,
+  metalness: 0.04,
+});
+const tableTopMat = new THREE.MeshStandardMaterial({
+  color: 0x1c1711,
+  roughness: 0.34,
+  metalness: 0.08,
+});
 const bronzeMat = new THREE.MeshStandardMaterial({
   color: 0x8f6b36,
-  roughness: 0.28,
+  roughness: 0.26,
   metalness: 0.72,
 });
-const backsplashMat = new THREE.MeshStandardMaterial({
-  color: 0x0e0d0b,
-  roughness: 0.38,
-  metalness: 0.18,
+const wallPanelMat = new THREE.MeshStandardMaterial({
+  color: 0x0d0b09,
+  roughness: 0.78,
+  metalness: 0.02,
+});
+const rugMat = new THREE.MeshStandardMaterial({
+  color: 0x17120d,
+  roughness: 0.9,
+  metalness: 0.0,
 });
 
-function addBox(name, width, height, depth, x, y, z, material, parent = kitchenGroup) {
+function addBox(name, width, height, depth, x, y, z, material, parent = livingRoomGroup) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.name = name;
   mesh.position.set(x, y, z);
@@ -362,52 +372,66 @@ function addBox(name, width, height, depth, x, y, z, material, parent = kitchenG
   return mesh;
 }
 
-const islandTop = addBox('kitchenIslandStoneTop', 3.9, 0.16, 1.45, 0, -0.94, 0.28, stoneMat);
-islandTop.castShadow = false;
-addBox('kitchenIslandBase', 3.35, 0.56, 1.05, 0, -1.25, 0.32, cabinetMat);
-addBox('kitchenIslandInsetFront', 2.95, 0.36, 0.035, 0, -1.23, 0.865, walnutMat);
-addBox('kitchenIslandToeKick', 3.0, 0.08, 0.86, 0, -1.53, 0.32, walnutMat);
-addBox('islandFrontBronzeLine', 3.25, 0.012, 0.012, 0, -1.04, 0.91, bronzeMat);
-addBox('islandLeftBronzeLine', 0.012, 0.012, 1.2, -1.8, -1.04, 0.32, bronzeMat);
-addBox('islandRightBronzeLine', 0.012, 0.012, 1.2, 1.8, -1.04, 0.32, bronzeMat);
+addBox('livingRoomWallPanelLeft', 1.5, 2.35, 0.03, -2.65, 0.18, -5.78, wallPanelMat);
+addBox('livingRoomWallPanelCenter', 2.6, 2.35, 0.03, -0.35, 0.18, -5.79, wallPanelMat);
+addBox('livingRoomWallPanelRight', 1.5, 2.35, 0.03, 2.15, 0.18, -5.78, wallPanelMat);
+addBox('slimPictureLedge', 4.8, 0.035, 0.16, -0.18, 0.62, -5.58, bronzeMat);
+addBox('lowMediaConsole', 4.7, 0.34, 0.46, -0.12, -1.17, -4.95, deepWoodMat);
 
-for (let i = -1; i <= 1; i++) {
-  addBox(`islandPanelDivider_${i}`, 0.012, 0.32, 0.018, i * 0.95, -1.24, 0.89, bronzeMat);
-  addBox(`islandDrawerPull_${i}`, 0.34, 0.018, 0.018, i * 0.95, -1.17, 0.92, bronzeMat);
+for (let i = -2; i <= 2; i++) {
+  addBox(`wallPanelReveal_${i}`, 0.012, 2.1, 0.024, i * 0.95, 0.2, -5.54, bronzeMat);
+  addBox(`consoleReveal_${i}`, 0.012, 0.26, 0.024, i * 0.82, -1.16, -4.68, bronzeMat);
 }
 
-addBox('rearCounterBase', 5.8, 0.55, 0.62, 0, -1.21, -5.22, cabinetMat);
-addBox('rearCounterTop', 6.1, 0.12, 0.72, 0, -0.87, -5.15, stoneMat);
-addBox('rearBacksplash', 6.1, 1.2, 0.04, 0, -0.23, -5.62, backsplashMat);
-addBox('upperCabinetBank', 5.9, 0.84, 0.22, 0, 0.92, -5.54, cabinetMat);
-addBox('floatingBronzeShelf', 4.4, 0.04, 0.34, 0, 0.28, -5.32, bronzeMat);
+addBox('sofaBase', 4.65, 0.42, 0.9, -0.18, -1.28, -3.28, charcoalFabricMat);
+addBox('sofaBack', 4.85, 0.86, 0.28, -0.18, -0.91, -3.73, charcoalFabricMat);
+addBox('sofaLeftArm', 0.32, 0.7, 0.96, -2.72, -1.08, -3.28, charcoalFabricMat);
+addBox('sofaRightArm', 0.32, 0.7, 0.96, 2.36, -1.08, -3.28, charcoalFabricMat);
 
-for (let i = -3; i <= 3; i++) {
-  addBox(`rearCabinetReveal_${i}`, 0.012, 0.76, 0.024, i * 0.82, 0.92, -5.40, bronzeMat);
-  addBox(`baseCabinetReveal_${i}`, 0.012, 0.42, 0.024, i * 0.82, -1.19, -4.86, bronzeMat);
+for (let i = 0; i < 4; i++) {
+  const cushion = addBox(`sofaSeatCushion_${i}`, 1.03, 0.12, 0.78, -1.72 + i * 1.03, -1.02, -3.15, charcoalFabricMat);
+  cushion.castShadow = false;
 }
 
-const vesselMat = new THREE.MeshStandardMaterial({
-  color: 0x2b2117,
-  roughness: 0.52,
-  metalness: 0.12,
+addBox('leftPillow', 0.5, 0.38, 0.16, -1.58, -0.72, -2.88, walnutMat).rotation.z = -0.08;
+addBox('rightPillow', 0.55, 0.34, 0.16, 1.1, -0.73, -2.88, walnutMat).rotation.z = 0.12;
+
+addBox('areaRug', 4.9, 0.025, 2.5, -0.05, -1.48, 0.05, rugMat);
+const tableTop = addBox('roundCoffeeTableTop', 2.65, 0.12, 1.32, 0, -0.96, 0, tableTopMat);
+tableTop.castShadow = false;
+addBox('coffeeTableShadowPlinth', 2.38, 0.1, 1.08, 0, -1.19, 0, deepWoodMat);
+addBox('coffeeTableBronzeFront', 2.35, 0.012, 0.018, 0, -0.88, 0.69, bronzeMat);
+addBox('coffeeTableBronzeBack', 2.35, 0.012, 0.018, 0, -0.88, -0.69, bronzeMat);
+addBox('coffeeTableLeftLeg', 0.08, 0.28, 0.08, -1.08, -1.16, 0.48, bronzeMat);
+addBox('coffeeTableRightLeg', 0.08, 0.28, 0.08, 1.08, -1.16, 0.48, bronzeMat);
+
+const sideTable = addBox('sideTable', 0.54, 0.08, 0.44, -2.15, -0.96, -2.78, walnutMat);
+sideTable.castShadow = false;
+addBox('sideTableStem', 0.08, 0.36, 0.08, -2.15, -1.17, -2.78, bronzeMat);
+
+const shadeMat = new THREE.MeshStandardMaterial({
+  color: 0xb18a55,
+  roughness: 0.55,
+  metalness: 0.05,
+  emissive: 0x4a2d14,
+  emissiveIntensity: 0.32,
 });
-const vesselGeo = new THREE.CylinderGeometry(0.16, 0.11, 0.18, radialSegments);
-const vessel = new THREE.Mesh(vesselGeo, vesselMat);
-vessel.name = 'counterVessel';
-vessel.position.set(-2.2, -0.71, -5.05);
-vessel.castShadow = !isCompactViewport;
-kitchenGroup.add(vessel);
+const sideShade = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.22, radialSegments), shadeMat);
+sideShade.name = 'sideTableLampShade';
+sideShade.position.set(-2.15, -0.72, -2.78);
+sideShade.castShadow = !isCompactViewport;
+sideShade.receiveShadow = true;
+livingRoomGroup.add(sideShade);
 
 const lowAccentLight = new THREE.PointLight(0xd6a763, 0.55, 5, 2.4);
-lowAccentLight.name = 'kitchenWarmAccent';
-lowAccentLight.position.set(-2.3, -0.55, -4.95);
+lowAccentLight.name = 'livingRoomWarmAccent';
+lowAccentLight.position.set(-2.15, -0.58, -2.78);
 scene.add(lowAccentLight);
 
 // ---- ROTARY DIAL CONTROLLER ----
 const dialGroup = new THREE.Group();
 dialGroup.name = 'dialController';
-dialGroup.position.set(1.42, 0.62, 1.05);
+dialGroup.position.set(1.04, 0.62, 0.34);
 scene.add(dialGroup);
 
 // Base platform
@@ -524,20 +548,23 @@ led.position.set(0, -1.27, -0.18);
 dialGroup.add(led);
 
 // ---- COUNTERTOP LIGHT POOL ----
-const poolGeo = new THREE.CircleGeometry(1.75, ringSegments);
+const poolGeo = new THREE.CircleGeometry(0.82, ringSegments);
 const poolMat = new THREE.MeshStandardMaterial({
   color: getLampColor(),
   emissive: getLampColor(),
   emissiveIntensity: 0.15,
   transparent: true,
   opacity: 0.3,
+  depthWrite: false,
   roughness: 0.9,
   metalness: 0.0,
 });
 const pool = new THREE.Mesh(poolGeo, poolMat);
 pool.name = 'lightPool';
 pool.rotation.x = -Math.PI / 2;
-pool.position.set(0, -0.852, 0.28);
+pool.position.set(0, -0.892, 0);
+pool.scale.set(1.22, 0.68, 1);
+pool.renderOrder = 2;
 scene.add(pool);
 
 // ---- UI OVERLAY ----
@@ -596,7 +623,7 @@ slider.className = 'temperature-range';
 slider.type = 'range';
 slider.min = String(MIN_KELVIN);
 slider.max = String(MAX_KELVIN);
-slider.step = '50';
+slider.step = '10';
 slider.value = String(DEFAULT_KELVIN);
 slider.style.cssText = `
   -webkit-appearance: none;
@@ -653,7 +680,7 @@ function addMetricInput(labelText, unitText, config) {
 
   const input = document.createElement('input');
   input.className = 'temperature-number';
-  input.type = 'number';
+  input.type = 'text';
   input.min = String(config.min);
   input.max = String(config.max);
   input.step = String(config.step);
@@ -680,6 +707,7 @@ function addMetricInput(labelText, unitText, config) {
     color: #6f6040;
     font-size: 8px;
     letter-spacing: 0.12em;
+    pointer-events: none;
   `;
   fieldWrap.appendChild(unit);
 
@@ -691,14 +719,14 @@ function addMetricInput(labelText, unitText, config) {
 const kelvinInput = addMetricInput('Colour temperature', 'K', {
   min: MIN_KELVIN,
   max: MAX_KELVIN,
-  step: 50,
+  step: 10,
   value: DEFAULT_KELVIN,
 });
 
 const lumenInput = addMetricInput('Luminous output', 'lm', {
   min: MIN_LUMENS,
   max: MAX_LUMENS,
-  step: 50,
+  step: 10,
   value: DEFAULT_LUMENS,
 });
 
@@ -783,6 +811,10 @@ label.style.cssText = `
 label.textContent = 'Colour Temperature';
 uiContainer.appendChild(label);
 
+function numericDraft(value) {
+  return String(value).replace(/[^\d]/g, '');
+}
+
 function setTargetKelvin(value, syncControls = true) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return;
@@ -802,25 +834,54 @@ function setTargetLumens(value, syncControls = true) {
   }
 }
 
+function commitKelvinInput(value) {
+  const draft = numericDraft(value);
+  setTargetKelvin(draft || DEFAULT_KELVIN);
+}
+
+function commitLumenInput(value) {
+  const draft = numericDraft(value);
+  setTargetLumens(draft || DEFAULT_LUMENS);
+}
+
 slider.addEventListener('input', (e) => {
-  setTargetKelvin(e.target.value, false);
-  kelvinInput.value = String(targetKelvin);
+  setTargetKelvin(e.target.value);
 });
 
 kelvinInput.addEventListener('input', (e) => {
-  if (e.target.value === '') return;
-  setTargetKelvin(e.target.value);
+  const draft = numericDraft(e.target.value);
+  if (draft !== e.target.value) e.target.value = draft;
+  if (draft.length >= 4) {
+    setTargetKelvin(draft, false);
+    slider.value = String(targetKelvin);
+  }
 });
 kelvinInput.addEventListener('blur', (e) => {
-  setTargetKelvin(e.target.value || DEFAULT_KELVIN);
+  commitKelvinInput(e.target.value);
+});
+kelvinInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    commitKelvinInput(e.currentTarget.value);
+    e.currentTarget.blur();
+  }
 });
 
 lumenInput.addEventListener('input', (e) => {
-  if (e.target.value === '') return;
-  setTargetLumens(e.target.value, false);
+  const draft = numericDraft(e.target.value);
+  if (draft !== e.target.value) e.target.value = draft;
+  const parsed = Number(draft);
+  if (Number.isFinite(parsed) && parsed >= MIN_LUMENS) {
+    setTargetLumens(parsed, false);
+  }
 });
 lumenInput.addEventListener('blur', (e) => {
-  setTargetLumens(e.target.value || DEFAULT_LUMENS);
+  commitLumenInput(e.target.value);
+});
+lumenInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    commitLumenInput(e.currentTarget.value);
+    e.currentTarget.blur();
+  }
 });
 
 // ---- UPDATE FUNCTION ----
@@ -861,10 +922,10 @@ function updateLampColor() {
   diffuserMat.emissiveIntensity = 0.95 + perceivedOutput * 0.9;
 
   glowMat.opacity = THREE.MathUtils.clamp(0.045 * perceivedOutput, 0.035, 0.16);
-  coneMat.opacity = THREE.MathUtils.clamp((0.008 + warmth * 0.014) * perceivedOutput, 0.008, 0.06);
+  coneMat.opacity = THREE.MathUtils.clamp((0.006 + warmth * 0.011) * perceivedOutput, 0.006, 0.042);
 
-  poolMat.opacity = THREE.MathUtils.clamp((0.18 + warmth * 0.18) * perceivedOutput, 0.16, 0.72);
-  poolMat.emissiveIntensity = THREE.MathUtils.clamp((0.1 + warmth * 0.14) * perceivedOutput, 0.08, 0.5);
+  poolMat.opacity = THREE.MathUtils.clamp((0.12 + warmth * 0.13) * perceivedOutput, 0.1, 0.48);
+  poolMat.emissiveIntensity = THREE.MathUtils.clamp((0.08 + warmth * 0.11) * perceivedOutput, 0.06, 0.36);
 }
 
 // ---- ANIMATION LOOP ----
