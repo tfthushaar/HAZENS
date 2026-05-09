@@ -135,6 +135,10 @@
     transform: translateY(-1px);
   }
 
+  .short-label {
+    display: none;
+  }
+
   .hero {
     position: relative;
     z-index: 2;
@@ -408,9 +412,18 @@
   @media (max-width: 640px) {
     nav { padding: 0 18px; }
     .brand { font-size: 19px; letter-spacing: 0.2em; }
-    .nav-actions { gap: 10px; }
+    .nav-actions {
+      max-width: calc(100vw - 118px);
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .nav-actions::-webkit-scrollbar { display: none; }
     .nav-actions .nav-link { display: none; }
     .nav-button { min-height: 38px; padding: 0 14px; font-size: 9px; letter-spacing: 0.16em; }
+    .wide-label { display: none; }
+    .short-label { display: inline; }
     .hero {
       padding: 112px 20px 42px;
       min-height: 100svh;
@@ -472,8 +485,9 @@
     <a class="brand" href="index.html">Hazen</a>
     <div class="nav-actions">
       <a class="nav-link" href="#collections">Collections</a>
+      <a class="nav-button" href="interact.html">Interact</a>
       <button class="nav-button" type="button" data-enquiry-open="home-nav">Enquire</button>
-      <a class="nav-button" href="products.html">Browse Products</a>
+      <a class="nav-button" href="products.html"><span class="wide-label">Browse Products</span><span class="short-label">Products</span></a>
     </div>
   </nav>
 
