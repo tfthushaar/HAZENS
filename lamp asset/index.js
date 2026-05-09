@@ -648,6 +648,7 @@ function updateLampColor() {
 
 // ---- ANIMATION LOOP ----
 const clock = new THREE.Clock();
+let simulatorReadyAnnounced = false;
 
 function animate() {
   const elapsed = clock.getElapsedTime();
@@ -659,6 +660,11 @@ function animate() {
   updateLampColor();
   controls.update();
   composer.render();
+
+  if (!simulatorReadyAnnounced) {
+    simulatorReadyAnnounced = true;
+    window.dispatchEvent(new Event('hazen-simulator-ready'));
+  }
 }
 
 renderer.setAnimationLoop(animate);
