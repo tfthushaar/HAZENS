@@ -46,6 +46,7 @@
     font-weight: 300;
     overflow-x: hidden;
     cursor: none;
+    padding-bottom: 56px;
   }
 
   /* Custom cursor */
@@ -81,16 +82,6 @@
     letter-spacing: 0.18em; color: var(--ink); text-decoration: none;
     cursor: none; text-transform: uppercase;
   }
-  .nav-links {
-    display: flex;
-    gap: clamp(14px, 1.4vw, 26px);
-    align-items: center;
-    max-width: min(58vw, 980px);
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .nav-links::-webkit-scrollbar { display: none; }
   .nav-actions { display: flex; align-items: center; gap: 12px; position: relative; }
   .nav-link {
     font-family: var(--sans); font-size: 10px; font-weight: 400; letter-spacing: 0.18em;
@@ -106,6 +97,48 @@
   }
   .nav-link:hover, .nav-link.active { color: var(--ink); }
   .nav-link:hover::after, .nav-link.active::after { right: 0; }
+
+  .desktop-cat-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    height: 56px;
+    display: grid;
+    background: rgba(247,241,230,0.97);
+    border-top: 1px solid var(--rule);
+    backdrop-filter: blur(12px);
+  }
+  .desktop-cat-inner {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .desktop-cat-link {
+    min-width: 0;
+    border: 0;
+    border-right: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink2);
+    cursor: none;
+    font-family: var(--sans);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
+  }
+  .desktop-cat-link:last-child { border-right: 0; }
+  .desktop-cat-link:hover,
+  .desktop-cat-link.active {
+    background: rgba(255,255,255,0.42);
+    color: var(--ink);
+  }
   .nav-cta {
     font-family: var(--sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
     border: 1px solid var(--ink); color: var(--ink);
@@ -809,8 +842,13 @@
   @media (max-width: 1024px) {
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .hero-left { max-width: min(680px, 62vw); }
+    .desktop-cat-link {
+      font-size: 7px;
+      letter-spacing: 0.04em;
+    }
   }
   @media (max-width: 768px) {
+    body { padding-bottom: 0; }
     #hero { min-height: 100vh; padding-top: 102px; }
     #hero::before { background: linear-gradient(180deg, rgba(247,241,230,0.56) 0%, rgba(247,241,230,0.82) 100%); }
     .hero-left {
@@ -864,9 +902,7 @@
     .mobile-cat-trigger { display: inline-flex; }
     .mobile-cat-backdrop { display: block; }
     .mobile-cat-panel { display: flex; }
-    .nav-links {
-      display: none;
-    }
+    .desktop-cat-bar { display: none; }
     .nav-actions {
       max-width: calc(100vw - 124px);
       overflow-x: auto;
@@ -957,6 +993,7 @@
     .product-card,
     .variant-thumb,
     .detail-close,
+    .desktop-cat-link,
     .search-input,
     .search-result { cursor: auto; }
     .product-card:hover .product-img-wrap img { transform: none; }
@@ -2271,14 +2308,6 @@ function App() {
       {/* Nav */}
       <nav>
         <a className="nav-logo" href="index.html">Hazen</a>
-        <div className="nav-links">
-          {CATEGORIES.map(c => (
-            <button key={c.id} className={`nav-link${activeId === c.id ? ' active' : ''}`}
-              onClick={() => scrollToCategory(c.id)}>
-              {c.short}
-            </button>
-          ))}
-        </div>
         <div className="nav-actions">
           <button
             type="button"
@@ -2303,6 +2332,20 @@ function App() {
           <button className="nav-cta" type="button" data-enquiry-open="catalogue-nav">Enquire</button>
         </div>
       </nav>
+
+      <div className="desktop-cat-bar" aria-label="Product categories">
+        <div className="desktop-cat-inner">
+          {CATEGORIES.map(c => (
+            <button
+              key={c.id}
+              type="button"
+              className={`desktop-cat-link${activeId === c.id ? ' active' : ''}`}
+              onClick={() => scrollToCategory(c.id)}>
+              {c.short}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div
         className={`mobile-cat-backdrop${categoryMenuOpen ? ' open' : ''}`}
