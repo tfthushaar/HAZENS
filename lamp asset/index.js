@@ -1,46 +1,35 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 // Scene setup
+const isCompactViewport = window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+const maxPixelRatio = isCompactViewport ? 1.2 : 1.5;
+const radialSegments = isCompactViewport ? 24 : 40;
+const ringSegments = isCompactViewport ? 32 : 48;
+const shadowSize = isCompactViewport ? 512 : 1024;
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
 scene.fog = new THREE.FogExp2(0x050505, 0.015);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 1.2, 5.5);
+camera.position.set(1.35, 1.1, 6.1);
 camera.lookAt(0, 0.5, 0);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({
+  antialias: !isCompactViewport,
+  alpha: false,
+  powerPreference: 'high-performance',
+  stencil: false,
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxPixelRatio));
+renderer.shadowMap.enabled = !isCompactViewport;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.8;
+renderer.toneMappingExposure = 1.05;
 const root = document.getElementById('root') ?? document.body;
 root.appendChild(renderer.domElement);
-
-// Post-processing
-const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
-composer.addPass(renderPass);
-
-const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  0.6, 0.4, 0.85
-);
-composer.addPass(bloomPass);
-
-const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
-composer.addPass(smaaPass);
-
-const outputPass = new OutputPass();
-composer.addPass(outputPass);
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -55,7 +44,7 @@ controls.update();
 function applyResponsiveCamera() {
   const isMobile = window.innerWidth <= 720;
   camera.fov = isMobile ? 52 : 45;
-  camera.position.set(0, isMobile ? 1.05 : 1.2, isMobile ? 6.8 : 5.5);
+  camera.position.set(isMobile ? 0.85 : 1.35, isMobile ? 0.95 : 1.1, isMobile ? 7.0 : 6.1);
   controls.target.set(0, isMobile ? 0.35 : 0.5, 0);
   controls.minDistance = isMobile ? 3.4 : 2.5;
   controls.maxDistance = isMobile ? 10 : 9;
@@ -158,7 +147,7 @@ scene.add(rightWall);
 // ---- PENDANT LAMP ----
 const lampGroup = new THREE.Group();
 lampGroup.name = 'pendantLamp';
-lampGroup.position.set(0, 2.8, 0);
+lampGroup.position.set(0, 2.3, 0);
 scene.add(lampGroup);
 
 // Ceiling canopy (mounting plate)
@@ -187,7 +176,7 @@ cable.position.y = 0.875;
 lampGroup.add(cable);
 
 // Main lamp housing - outer shell (matte black metal)
-const housingOuterGeo = new THREE.CylinderGeometry(0.45, 0.32, 0.35, 64, 1, true);
+const housingOuterGeo = new THREE.CylinderGeometry(0.45, 0.32, 0.35, radialSegments, 1, true);
 const housingOuterMat = new THREE.MeshStandardMaterial({
   color: 0x111111,
   roughness: 0.7,
@@ -201,7 +190,7 @@ housingOuter.castShadow = true;
 lampGroup.add(housingOuter);
 
 // Housing top cap
-const topCapGeo = new THREE.CylinderGeometry(0.008, 0.45, 0.04, 64);
+const topCapGeo = new THREE.CylinderGeometry(0.008, 0.45, 0.04, radialSegments);
 const topCapMat = new THREE.MeshStandardMaterial({
   color: 0x111111,
   roughness: 0.6,
@@ -214,7 +203,7 @@ topCap.castShadow = true;
 lampGroup.add(topCap);
 
 // Inner reflector (brushed aluminum)
-const reflectorGeo = new THREE.CylinderGeometry(0.43, 0.30, 0.33, 64, 1, true);
+const reflectorGeo = new THREE.CylinderGeometry(0.43, 0.30, 0.33, radialSegments, 1, true);
 const reflectorMat = new THREE.MeshStandardMaterial({
   color: 0x888888,
   roughness: 0.25,
@@ -227,7 +216,7 @@ reflector.position.y = 0.0;
 lampGroup.add(reflector);
 
 // Bottom ring (brushed aluminum accent)
-const ringGeo = new THREE.TorusGeometry(0.32, 0.015, 16, 64);
+const ringGeo = new THREE.TorusGeometry(0.32, 0.015, 12, ringSegments);
 const ringMat = new THREE.MeshStandardMaterial({
   color: 0x999999,
   roughness: 0.2,
@@ -240,7 +229,7 @@ ring.position.y = -0.175;
 lampGroup.add(ring);
 
 // Frosted glass diffuser
-const diffuserGeo = new THREE.CylinderGeometry(0.30, 0.30, 0.02, 64);
+const diffuserGeo = new THREE.CylinderGeometry(0.30, 0.30, 0.02, radialSegments);
 const diffuserMat = new THREE.MeshPhysicalMaterial({
   color: 0xffffff,
   roughness: 0.6,
@@ -258,7 +247,7 @@ diffuser.position.y = -0.175;
 lampGroup.add(diffuser);
 
 // Inner glow cylinder
-const glowGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.30, 64, 1, true);
+const glowGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.30, radialSegments, 1, true);
 const glowMat = new THREE.MeshBasicMaterial({
   color: getLampColor(),
   transparent: true,
@@ -275,8 +264,8 @@ const lampLight = new THREE.PointLight(getLampColor(), 15, 12, 1.5);
 lampLight.name = 'lampLight';
 lampLight.position.set(0, -0.1, 0);
 lampLight.castShadow = true;
-lampLight.shadow.mapSize.width = 2048;
-lampLight.shadow.mapSize.height = 2048;
+lampLight.shadow.mapSize.width = shadowSize;
+lampLight.shadow.mapSize.height = shadowSize;
 lampLight.shadow.bias = -0.001;
 lampLight.shadow.normalBias = 0.02;
 lampLight.shadow.radius = 4;
@@ -294,14 +283,14 @@ spotLight.name = 'spotLight';
 spotLight.position.set(0, -0.1, 0);
 spotLight.target.position.set(0, -5, 0);
 spotLight.castShadow = true;
-spotLight.shadow.mapSize.width = 2048;
-spotLight.shadow.mapSize.height = 2048;
+spotLight.shadow.mapSize.width = shadowSize;
+spotLight.shadow.mapSize.height = shadowSize;
 spotLight.shadow.bias = -0.001;
 lampGroup.add(spotLight);
 lampGroup.add(spotLight.target);
 
 // Volumetric light cone (visible beam)
-const coneGeo = new THREE.CylinderGeometry(0.30, 1.8, 4.0, 64, 1, true);
+const coneGeo = new THREE.CylinderGeometry(0.30, 1.8, 4.0, radialSegments, 1, true);
 const coneMat = new THREE.MeshBasicMaterial({
   color: getLampColor(),
   transparent: true,
@@ -315,12 +304,12 @@ lightCone.position.y = -2.2;
 lampGroup.add(lightCone);
 
 // Ambient light (very dim)
-const ambientLight = new THREE.AmbientLight(0x111111, 0.3);
+const ambientLight = new THREE.AmbientLight(0x222222, 0.5);
 ambientLight.name = 'ambientLight';
 scene.add(ambientLight);
 
 // Very subtle rim light
-const rimLight = new THREE.DirectionalLight(0x222222, 0.2);
+const rimLight = new THREE.DirectionalLight(0x555555, 0.42);
 rimLight.name = 'rimLight';
 rimLight.position.set(3, 4, -2);
 scene.add(rimLight);
@@ -332,7 +321,7 @@ dialGroup.position.set(1.8, 0.05, 1.5);
 scene.add(dialGroup);
 
 // Base platform
-const basePlatGeo = new THREE.CylinderGeometry(0.35, 0.38, 0.04, 64);
+const basePlatGeo = new THREE.CylinderGeometry(0.35, 0.38, 0.04, radialSegments);
 const basePlatMat = new THREE.MeshStandardMaterial({
   color: 0x0e0e0e,
   roughness: 0.85,
@@ -345,7 +334,7 @@ basePlat.receiveShadow = true;
 dialGroup.add(basePlat);
 
 // Dial body
-const dialBodyGeo = new THREE.CylinderGeometry(0.25, 0.27, 0.12, 64);
+const dialBodyGeo = new THREE.CylinderGeometry(0.25, 0.27, 0.12, radialSegments);
 const dialBodyMat = new THREE.MeshStandardMaterial({
   color: 0x1a1a1a,
   roughness: 0.35,
@@ -358,7 +347,7 @@ dialBody.castShadow = true;
 dialGroup.add(dialBody);
 
 // Dial knob top
-const dialKnobGeo = new THREE.CylinderGeometry(0.22, 0.25, 0.06, 64);
+const dialKnobGeo = new THREE.CylinderGeometry(0.22, 0.25, 0.06, radialSegments);
 const dialKnobMat = new THREE.MeshStandardMaterial({
   color: 0x222222,
   roughness: 0.25,
@@ -371,8 +360,9 @@ dialKnob.castShadow = true;
 dialGroup.add(dialKnob);
 
 // Knurled texture (small ridges around the dial)
-for (let i = 0; i < 48; i++) {
-  const angle = (i / 48) * Math.PI * 2;
+const ridgeCount = isCompactViewport ? 24 : 36;
+for (let i = 0; i < ridgeCount; i++) {
+  const angle = (i / ridgeCount) * Math.PI * 2;
   const ridgeGeo = new THREE.BoxGeometry(0.008, 0.10, 0.015);
   const ridgeMat = new THREE.MeshStandardMaterial({
     color: 0x2a2a2a,
@@ -405,7 +395,7 @@ indicator.position.set(0.1, -1.28, 0);
 dialGroup.add(indicator);
 
 // Temperature scale ring (subtle markings)
-const scaleRingGeo = new THREE.TorusGeometry(0.33, 0.005, 8, 64);
+const scaleRingGeo = new THREE.TorusGeometry(0.33, 0.005, 8, ringSegments);
 const scaleRingMat = new THREE.MeshStandardMaterial({
   color: 0x333333,
   roughness: 0.5,
@@ -436,7 +426,7 @@ for (let i = 0; i <= 8; i++) {
 }
 
 // Small LED indicator on dial
-const ledGeo = new THREE.SphereGeometry(0.015, 16, 16);
+const ledGeo = new THREE.SphereGeometry(0.015, 10, 8);
 const ledMat = new THREE.MeshBasicMaterial({ color: getLampColor() });
 const led = new THREE.Mesh(ledGeo, ledMat);
 led.name = 'dialLED';
@@ -444,7 +434,7 @@ led.position.set(0, -1.27, -0.18);
 dialGroup.add(led);
 
 // ---- FLOOR LIGHT POOL (subtle circle of light on floor) ----
-const poolGeo = new THREE.CircleGeometry(2.0, 64);
+const poolGeo = new THREE.CircleGeometry(2.0, ringSegments);
 const poolMat = new THREE.MeshStandardMaterial({
   color: getLampColor(),
   emissive: getLampColor(),
@@ -537,7 +527,6 @@ sliderContainer.appendChild(coolLabel);
 // Style the slider thumb
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -630,9 +619,7 @@ function updateLampColor() {
   indicator.position.z = Math.sin(-dialAngle) * 0.1;
   indicator.rotation.y = dialAngle;
 
-  // Adjust bloom intensity based on temperature
   const warmth = 1 - colorTemp;
-  bloomPass.strength = 0.4 + warmth * 0.4;
 
   // Adjust light intensity subtly
   lampLight.intensity = 12 + warmth * 6;
@@ -659,7 +646,7 @@ function animate() {
 
   updateLampColor();
   controls.update();
-  composer.render();
+  renderer.render(scene, camera);
 
   if (!simulatorReadyAnnounced) {
     simulatorReadyAnnounced = true;
@@ -675,6 +662,5 @@ window.addEventListener('resize', () => {
   applyResponsiveCamera();
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  composer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxPixelRatio));
 });

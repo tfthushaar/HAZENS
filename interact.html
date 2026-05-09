@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
 <title>Hazen - Colour Temperature Simulator</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="modulepreload" href="./lamp%20asset/index.js?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -138,6 +140,25 @@
     text-transform: uppercase;
   }
 
+  .loader-retry {
+    display: none;
+    min-height: 38px;
+    padding: 0 18px;
+    border: 1px solid rgba(214,185,111,0.36);
+    background: transparent;
+    color: var(--gold-soft);
+    font: inherit;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  body.is-simulator-failed .loader-retry {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   body.is-simulator-ready .simulator-loader {
     opacity: 0;
     visibility: hidden;
@@ -172,6 +193,7 @@
   .brand {
     font-family: var(--serif);
     font-size: 22px;
+    font-weight: 500;
     letter-spacing: 0.26em;
     text-transform: uppercase;
     color: var(--gold-soft);
@@ -289,6 +311,7 @@
       <div class="loader-orbit" aria-hidden="true"></div>
       <div class="loader-beam" aria-hidden="true"></div>
       <div class="loader-label">Preparing colour temperature</div>
+      <button class="loader-retry" type="button" onclick="window.location.reload()">Retry</button>
     </div>
   </div>
 
@@ -308,28 +331,42 @@
   <script>
     (() => {
       const startedAt = performance.now();
-      const minVisibleMs = 1250;
+      const minVisibleMs = 650;
       const loader = document.getElementById('simulator-loader');
+      let settled = false;
       const markReady = () => {
+        if (settled) return;
+        settled = true;
         const elapsed = performance.now() - startedAt;
         window.setTimeout(() => {
           document.body.classList.add('is-simulator-ready');
           window.setTimeout(() => loader?.remove(), 800);
         }, Math.max(0, minVisibleMs - elapsed));
       };
+      const markFailed = () => {
+        if (settled) return;
+        const canvas = document.querySelector('#root canvas');
+        if (canvas) {
+          markReady();
+          return;
+        }
+        document.body.classList.add('is-simulator-failed');
+        const label = document.querySelector('.loader-label');
+        if (label) label.textContent = 'Unable to start simulator';
+      };
 
       window.addEventListener('hazen-simulator-ready', markReady, { once: true });
-      window.addEventListener('hazen-simulator-error', () => {
-        const label = document.querySelector('.loader-label');
-        if (label) label.textContent = 'Simulator is taking longer than expected';
-      }, { once: true });
+      window.addEventListener('error', markFailed, { once: true });
+      window.addEventListener('unhandledrejection', markFailed, { once: true });
       window.setTimeout(() => {
-        if (!document.body.classList.contains('is-simulator-ready')) {
-          window.dispatchEvent(new Event('hazen-simulator-error'));
+        if (!settled) {
+          const canvas = document.querySelector('#root canvas');
+          if (canvas) markReady();
         }
-      }, 7000);
+      }, 2500);
+      window.setTimeout(markFailed, 8000);
     })();
   </script>
-  <script type="module" src="./lamp%20asset/index.js"></script>
+  <script type="module" src="./lamp%20asset/index.js?v=3"></script>
 </body>
 </html>
