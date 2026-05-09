@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Scene setup
 const isCompactViewport = window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
@@ -7,6 +6,7 @@ const maxPixelRatio = isCompactViewport ? 1.2 : 1.5;
 const radialSegments = isCompactViewport ? 24 : 40;
 const ringSegments = isCompactViewport ? 32 : 48;
 const shadowSize = isCompactViewport ? 512 : 1024;
+const cameraTarget = new THREE.Vector3(0, 0.5, 0);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
@@ -30,26 +30,15 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 const root = document.getElementById('root') ?? document.body;
 root.appendChild(renderer.domElement);
-
-// Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 2.5;
-controls.maxDistance = 9;
-controls.maxPolarAngle = Math.PI * 0.85;
-controls.target.set(0, 0.5, 0);
-controls.update();
+renderer.domElement.style.touchAction = 'none';
 
 function applyResponsiveCamera() {
   const isMobile = window.innerWidth <= 720;
   camera.fov = isMobile ? 52 : 45;
   camera.position.set(isMobile ? 0.85 : 1.35, isMobile ? 0.95 : 1.1, isMobile ? 7.0 : 6.1);
-  controls.target.set(0, isMobile ? 0.35 : 0.5, 0);
-  controls.minDistance = isMobile ? 3.4 : 2.5;
-  controls.maxDistance = isMobile ? 10 : 9;
+  cameraTarget.set(0, isMobile ? 0.35 : 0.5, 0);
+  camera.lookAt(cameraTarget);
   camera.updateProjectionMatrix();
-  controls.update();
 }
 applyResponsiveCamera();
 
@@ -634,18 +623,10 @@ function updateLampColor() {
 }
 
 // ---- ANIMATION LOOP ----
-const clock = new THREE.Clock();
 let simulatorReadyAnnounced = false;
 
 function animate() {
-  const elapsed = clock.getElapsedTime();
-
-  // Subtle lamp sway
-  lampGroup.rotation.z = Math.sin(elapsed * 0.3) * 0.003;
-  lampGroup.rotation.x = Math.cos(elapsed * 0.25) * 0.002;
-
   updateLampColor();
-  controls.update();
   renderer.render(scene, camera);
 
   if (!simulatorReadyAnnounced) {
