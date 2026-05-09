@@ -112,6 +112,118 @@
   }
   .nav-cta:hover { background: var(--ink); border-color: var(--ink); color: var(--white); }
 
+  .mobile-cat-trigger,
+  .mobile-cat-backdrop,
+  .mobile-cat-panel {
+    display: none;
+  }
+  body.cat-menu-open {
+    overflow: hidden;
+  }
+  .mobile-cat-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 108;
+    background: rgba(17,17,16,0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .mobile-cat-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mobile-cat-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 109;
+    width: min(84vw, 340px);
+    background: rgba(247,241,230,0.98);
+    border-left: 1px solid var(--rule);
+    box-shadow: -24px 0 60px rgba(17,17,16,0.14);
+    transform: translateX(100%);
+    transition: transform 0.34s cubic-bezier(.25,.46,.45,.94);
+    pointer-events: none;
+  }
+  .mobile-cat-panel.open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .mobile-cat-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 22px;
+  }
+  .mobile-cat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mobile-cat-title {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink2);
+  }
+  .mobile-cat-close {
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0;
+    cursor: none;
+  }
+  .mobile-cat-list {
+    display: grid;
+    gap: 0;
+    overflow-y: auto;
+    padding: 10px 0 4px;
+  }
+  .mobile-cat-item {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink2);
+    text-align: left;
+    cursor: none;
+  }
+  .mobile-cat-index {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--ink3);
+  }
+  .mobile-cat-name {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink2);
+  }
+  .mobile-cat-item.active .mobile-cat-name,
+  .mobile-cat-item:focus-visible .mobile-cat-name {
+    color: var(--ink);
+  }
+  .mobile-cat-item:focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: -1px;
+  }
+
   .search-wrap { position: relative; }
   .search-trigger.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
   .search-panel {
@@ -693,23 +805,18 @@
     .detail-variant-panel img { padding: 42px; }
     nav {
       height: auto;
-      min-height: 96px;
-      padding: 13px 24px 10px;
-      flex-wrap: wrap;
-      gap: 10px 16px;
+      min-height: 64px;
+      padding: 10px 24px;
+      flex-wrap: nowrap;
+      gap: 12px;
       align-content: center;
     }
+    .mobile-cat-trigger { display: inline-flex; }
+    .mobile-cat-backdrop { display: block; }
+    .mobile-cat-panel { display: flex; }
     .nav-links {
-      order: 3;
-      width: 100%;
-      display: flex;
-      gap: 22px;
-      overflow-x: auto;
-      padding: 5px 0 2px;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+      display: none;
     }
-    .nav-links::-webkit-scrollbar { display: none; }
     .nav-link {
       flex: 0 0 auto;
       font-size: 9px;
@@ -719,15 +826,16 @@
   }
 
   @media (max-width: 560px) {
-    nav { padding: 12px 16px 9px; }
+    nav { padding: 10px 14px; }
     .nav-logo { font-size: 17px; letter-spacing: 0.14em; }
     .nav-actions { gap: 6px; }
-    .nav-cta { padding: 7px 8px; font-size: 8px; letter-spacing: 0.12em; }
-    .nav-links { gap: 18px; }
+    .nav-cta { padding: 7px 7px; font-size: 8px; letter-spacing: 0.1em; }
+    .mobile-cat-panel { width: min(88vw, 326px); }
+    .mobile-cat-inner { padding: 22px 20px; }
     .nav-link { font-size: 8px; letter-spacing: 0.14em; }
     .search-panel {
       position: fixed;
-      top: 104px;
+      top: 74px;
       left: 12px;
       right: 12px;
       width: auto;
@@ -1562,6 +1670,10 @@ const PRODUCT_SPEC_ALIASES = {
   'GD-A2-POWER-CONNECTOR': ['GD-A2-POWER-ACCESSORIES'],
   'GD-A2-POWER-CORNER-CONNECTOR': ['GD-A2-POWER-ACCESSORIES'],
   'GD-A2-POWER-HEAD': ['GD-A2-POWER-ACCESSORIES'],
+  'GD-CORNER-CONNECTOR': ['GD-M48V-CORNERS'],
+  'GD-POWER-CONNECTOR': ['GD-A2-POWER-ACCESSORIES'],
+  'GD-POWER-HEAD': ['GD-A2-POWER-ACCESSORIES'],
+  'GD-TRACK-DECORATIVE-PIECE': ['GD'],
   SLC74265: ['SL74265'],
 };
 
@@ -1572,6 +1684,13 @@ const PRODUCT_SPEC_OVERRIDES = {
     type: ['Track'],
     area: ['PRATO Track Lights- Surface & Recessed'],
     bodyColor: ['Black'],
+  },
+  WLB120: {
+    article: ['CORSICA'],
+    itemNo: ['WLB120 Pre-buried part'],
+    type: ['Staircase'],
+    area: ['Staircase wall installation part'],
+    bodyColor: ['Sand White'],
   },
 };
 
@@ -1907,6 +2026,7 @@ function App() {
   const [detailProduct, setDetailProduct] = useState(null);
   const [detailCat, setDetailCat] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [highlightedProductId, setHighlightedProductId] = useState(null);
   const ringPos = useRef({ x: 0, y: 0 });
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -1944,6 +2064,18 @@ function App() {
   }, [searchOpen]);
 
   useEffect(() => () => window.clearTimeout(highlightTimerRef.current), []);
+
+  useEffect(() => {
+    document.body.classList.toggle('cat-menu-open', categoryMenuOpen);
+    const onKeyDown = event => {
+      if (event.key === 'Escape') setCategoryMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.classList.remove('cat-menu-open');
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [categoryMenuOpen]);
 
   // Cursor
   useEffect(() => {
@@ -2003,6 +2135,7 @@ function App() {
 
   const scrollToCategory = id => {
     setActiveId(id);
+    setCategoryMenuOpen(false);
     const el = document.getElementById('cat-' + id);
     if (el) {
       const offset = el.getBoundingClientRect().top + window.scrollY - 84;
@@ -2012,6 +2145,7 @@ function App() {
 
   const scrollToProduct = item => {
     setSearchOpen(false);
+    setCategoryMenuOpen(false);
     setActiveId(item.categoryId);
     setHighlightedProductId(item.product.id);
     window.clearTimeout(highlightTimerRef.current);
@@ -2039,6 +2173,14 @@ function App() {
           ))}
         </div>
         <div className="nav-actions">
+          <button
+            type="button"
+            className="nav-cta mobile-cat-trigger"
+            aria-controls="mobile-cat-menu"
+            aria-expanded={categoryMenuOpen}
+            onClick={() => setCategoryMenuOpen(open => !open)}>
+            Menu
+          </button>
           <div className="search-wrap" ref={searchWrapRef}>
             <button
               type="button"
@@ -2053,6 +2195,35 @@ function App() {
           <button className="nav-cta">Enquire</button>
         </div>
       </nav>
+
+      <div
+        className={`mobile-cat-backdrop${categoryMenuOpen ? ' open' : ''}`}
+        onClick={() => setCategoryMenuOpen(false)}
+        aria-hidden="true">
+      </div>
+      <aside
+        id="mobile-cat-menu"
+        className={`mobile-cat-panel${categoryMenuOpen ? ' open' : ''}`}
+        aria-hidden={!categoryMenuOpen}>
+        <div className="mobile-cat-inner">
+          <div className="mobile-cat-head">
+            <span className="mobile-cat-title">Product Categories</span>
+            <button type="button" className="mobile-cat-close" onClick={() => setCategoryMenuOpen(false)}>Close</button>
+          </div>
+          <div className="mobile-cat-list">
+            {CATEGORIES.map((c, index) => (
+              <button
+                type="button"
+                key={c.id}
+                className={`mobile-cat-item${activeId === c.id ? ' active' : ''}`}
+                onClick={() => scrollToCategory(c.id)}>
+                <span className="mobile-cat-index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="mobile-cat-name">{c.short}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </aside>
 
       {/* Hero */}
       <section id="hero">
