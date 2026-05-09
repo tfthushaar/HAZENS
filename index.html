@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="enquiry.css">
+<script src="enquiry-config.js" defer></script>
+<script src="enquiry.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -116,6 +119,12 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  button.nav-button,
+  button.hero-button {
+    font-family: inherit;
+    cursor: pointer;
   }
 
   .nav-button:hover,
@@ -463,6 +472,7 @@
     <a class="brand" href="index.html">Hazen</a>
     <div class="nav-actions">
       <a class="nav-link" href="#collections">Collections</a>
+      <button class="nav-button" type="button" data-enquiry-open="home-nav">Enquire</button>
       <a class="nav-button" href="products.html">Browse Products</a>
     </div>
   </nav>

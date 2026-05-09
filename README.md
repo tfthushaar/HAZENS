@@ -26,3 +26,25 @@ python -m http.server 8000
 ```
 
 Then open `http://127.0.0.1:8000/`. The product catalogue is available at `products.html`.
+
+## Enquiry Form To Spreadsheet
+
+The Enquire form is already built into the home page and catalogue page. Because GitHub Pages is static, the form needs a spreadsheet endpoint before it can append rows.
+
+Free Google Sheets setup:
+
+1. Create a Google Sheet named `Hazen Enquiries`.
+2. Go to **Extensions** > **Apps Script**.
+3. Paste the code from `enquiry-sheet-apps-script.gs`.
+4. Click **Deploy** > **New deployment**.
+5. Select **Web app**.
+6. Set **Execute as** to **Me** and **Who has access** to **Anyone**.
+7. Copy the Web App URL.
+8. Paste that URL into `enquiry-config.js`:
+
+```js
+window.HAZEN_ENQUIRY_ENDPOINT = 'PASTE_WEB_APP_URL_HERE';
+window.HAZEN_ENQUIRY_MODE = 'no-cors';
+```
+
+The sheet can be downloaded as an Excel workbook whenever needed using **File** > **Download** > **Microsoft Excel (.xlsx)**.
