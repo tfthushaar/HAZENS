@@ -2,12 +2,24 @@
 
 Static product catalogue for Hazen Lighting.
 
-## Free Deployment With GitHub Pages
+## Recommended Deployment For hazenlights.com
+
+The site is a static catalogue, so the simplest production setup is:
+
+1. Host on **Cloudflare Pages** from this GitHub repository.
+2. Set the production branch to `white`.
+3. Use no build command and publish the repository root, because the live pages are plain HTML files.
+4. Add `hazenlights.com` as the custom domain in Cloudflare Pages.
+5. Point the domain DNS to Cloudflare Pages using the DNS records Cloudflare provides.
+
+This keeps SSL, CDN delivery, cache headers, and domain management in one place. Netlify is also a good fit if the domain DNS is managed elsewhere.
+
+## Alternative Free Deployment With GitHub Pages
 
 1. Open the repository on GitHub.
 2. Go to **Settings** > **Pages**.
 3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-4. Select branch **main** and folder **/ (root)**.
+4. Select branch **white** and folder **/ (root)**.
 5. Click **Save**.
 6. Wait for the Pages panel to show **Your site is live at**:
 
