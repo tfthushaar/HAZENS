@@ -26,7 +26,7 @@
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
 
         body {
             background: var(--c-bg);
@@ -1330,6 +1330,15 @@
     </script>
 
     <script>
+        document.addEventListener('pointermove', (e) => {
+            if (window.parent === window) return;
+            window.parent.postMessage({
+                type: 'hazen-3d-pointer',
+                x: e.clientX,
+                y: e.clientY,
+            }, window.location.origin);
+        });
+
         const blurLayer = document.querySelector('.layer-blur');
         let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
         let smoothX = mouseX, smoothY = mouseY;

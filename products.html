@@ -1103,6 +1103,26 @@
   };
   window.addEventListener('DOMContentLoaded', window.HAZEN_FINISH_LOADER, { once: true });
 </script>
+<script>
+  (() => {
+    const iframe = document.querySelector('.products-3d-hero-bg iframe');
+    if (!iframe) return;
+
+    window.addEventListener('message', (event) => {
+      if (event.source !== iframe.contentWindow) return;
+      const data = event.data || {};
+      if (data.type !== 'hazen-3d-pointer') return;
+      if (!Number.isFinite(data.x) || !Number.isFinite(data.y)) return;
+
+      const rect = iframe.getBoundingClientRect();
+      window.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: rect.left + data.x,
+        clientY: rect.top + data.y,
+        bubbles: true,
+      }));
+    });
+  })();
+</script>
 <script defer src="products-app.js"></script>
 <script>
   (() => {
