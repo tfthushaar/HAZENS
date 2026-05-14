@@ -603,6 +603,15 @@ kelvinDisplay.style.cssText = `
 kelvinDisplay.textContent = `${getKelvinValue()}K / ${Math.round(currentLumens)} lm`;
 uiContainer.appendChild(kelvinDisplay);
 
+const controlSpacer = document.createElement('div');
+controlSpacer.className = 'temperature-control-spacer';
+controlSpacer.style.cssText = `
+  height: 48px;
+  width: min(420px, 88vw);
+  pointer-events: none;
+`;
+uiContainer.appendChild(controlSpacer);
+
 // Colour temperature presets
 const temperatureButtonGroup = document.createElement('div');
 temperatureButtonGroup.className = 'temperature-options';
@@ -699,87 +708,6 @@ brightLabel.textContent = 'HIGH';
 brightLabel.style.cssText = 'color: #f0dc9e; font-size: 10px; font-weight: 500; letter-spacing: 0.16em;';
 brightnessContainer.appendChild(brightLabel);
 
-const inputRow = document.createElement('div');
-inputRow.className = 'temperature-input-row';
-inputRow.style.cssText = `
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
-  width: min(220px, 88vw);
-`;
-uiContainer.appendChild(inputRow);
-
-function addMetricInput(labelText, unitText, config) {
-  const wrap = document.createElement('label');
-  wrap.className = 'temperature-metric';
-  wrap.style.cssText = `
-    display: grid;
-    gap: 6px;
-    color: #8d7a52;
-    font-size: 8px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  `;
-
-  const labelTextNode = document.createElement('span');
-  labelTextNode.textContent = labelText;
-  wrap.appendChild(labelTextNode);
-
-  const fieldWrap = document.createElement('span');
-  fieldWrap.className = 'temperature-number-wrap';
-  fieldWrap.style.cssText = `
-    display: flex;
-    align-items: center;
-    min-height: 34px;
-    border: 1px solid rgba(214,185,111,0.28);
-    background: rgba(10,10,10,0.74);
-  `;
-
-  const input = document.createElement('input');
-  input.className = 'temperature-number';
-  input.type = 'text';
-  input.min = String(config.min);
-  input.max = String(config.max);
-  input.step = String(config.step);
-  input.value = String(config.value);
-  input.inputMode = 'numeric';
-  input.style.cssText = `
-    width: 100%;
-    height: 32px;
-    border: 0;
-    background: transparent;
-    color: #f1dfad;
-    font: inherit;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    outline: none;
-    text-align: center;
-  `;
-  fieldWrap.appendChild(input);
-
-  const unit = document.createElement('span');
-  unit.textContent = unitText;
-  unit.style.cssText = `
-    padding-right: 11px;
-    color: #6f6040;
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    pointer-events: none;
-  `;
-  fieldWrap.appendChild(unit);
-
-  wrap.appendChild(fieldWrap);
-  inputRow.appendChild(wrap);
-  return input;
-}
-
-const lumenInput = addMetricInput('Luminous output', 'lm', {
-  min: MIN_LUMENS,
-  max: MAX_LUMENS,
-  step: 10,
-  value: DEFAULT_LUMENS,
-});
-
 // Style the slider thumb
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
@@ -836,6 +764,9 @@ styleSheet.textContent = `
       width: min(92vw, 420px);
       gap: 9px !important;
     }
+    .temperature-control-spacer {
+      height: 40px !important;
+    }
     .temperature-options {
       width: min(100%, 360px);
       display: grid !important;
@@ -869,21 +800,6 @@ styleSheet.textContent = `
     .temperature-readout {
       font-size: 11px !important;
     }
-    .temperature-input-row {
-      width: min(92vw, 360px) !important;
-      gap: 8px !important;
-    }
-    .temperature-metric {
-      font-size: 7px !important;
-      letter-spacing: 0.12em !important;
-    }
-    .temperature-number-wrap {
-      min-height: 31px !important;
-    }
-    .temperature-number {
-      height: 29px !important;
-      font-size: 10px !important;
-    }
     .temperature-label {
       font-size: 8px !important;
       letter-spacing: 2px !important;
@@ -904,10 +820,6 @@ label.style.cssText = `
 `;
 label.textContent = 'Light Controls';
 uiContainer.appendChild(label);
-
-function numericDraft(value) {
-  return String(value).replace(/[^\d]/g, '');
-}
 
 function nearestTemperaturePreset(value) {
   return TEMPERATURE_PRESETS.reduce((nearest, preset) => (
@@ -936,37 +848,12 @@ function setTargetLumens(value, syncControls = true) {
   if (!Number.isFinite(parsed)) return;
   targetLumens = Math.round(THREE.MathUtils.clamp(parsed, MIN_LUMENS, MAX_LUMENS));
   if (syncControls) {
-    lumenInput.value = String(targetLumens);
     brightnessSlider.value = String(targetLumens);
   }
-}
-
-function commitLumenInput(value) {
-  const draft = numericDraft(value);
-  setTargetLumens(draft || DEFAULT_LUMENS);
 }
 
 brightnessSlider.addEventListener('input', (e) => {
   setTargetLumens(e.target.value);
-});
-
-lumenInput.addEventListener('input', (e) => {
-  const draft = numericDraft(e.target.value);
-  if (draft !== e.target.value) e.target.value = draft;
-  const parsed = Number(draft);
-  if (Number.isFinite(parsed) && parsed >= MIN_LUMENS) {
-    setTargetLumens(parsed, false);
-    brightnessSlider.value = String(targetLumens);
-  }
-});
-lumenInput.addEventListener('blur', (e) => {
-  commitLumenInput(e.target.value);
-});
-lumenInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    commitLumenInput(e.currentTarget.value);
-    e.currentTarget.blur();
-  }
 });
 
 updateTemperatureButtons();
