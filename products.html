@@ -69,6 +69,33 @@
   body.cursor-hover #cursor-ring { width: 50px; height: 50px; border-color: rgba(17,17,16,0.5); }
   body.cursor-open #cursor-ring { width: 70px; height: 70px; }
 
+  #root {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .products-3d-hero-bg {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    height: calc(100vh - 60px);
+    min-height: 620px;
+    overflow: hidden;
+    z-index: 0;
+    background: radial-gradient(circle at 68% 44%, rgba(0,0,0,0.05), transparent 32%), var(--bg);
+    pointer-events: auto;
+  }
+
+  .products-3d-hero-bg iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    pointer-events: auto;
+  }
+
   /* Nav */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -445,7 +472,8 @@
     border-bottom: 1px solid var(--rule);
     position: relative; overflow: hidden;
     padding-top: 60px;
-    background: var(--bg);
+    background: transparent;
+    pointer-events: none;
   }
   #hero::before {
     content: '';
@@ -464,10 +492,11 @@
   .hero-right {
     position: absolute; inset: 60px 0 0;
     overflow: hidden;
-    background: var(--bg);
+    background: transparent;
     z-index: 0;
   }
   .hero-right-img {
+    display: none;
     position: absolute; inset: 0;
     background:
       url('images/hero-backdrop.jpg'),
@@ -640,6 +669,17 @@
   }
   .product-finish {
     font-size: 10px; color: var(--product-soft); letter-spacing: 0.05em;
+  }
+  .product-cert {
+    width: fit-content;
+    margin-top: 8px;
+    padding: 4px 7px;
+    border: 1px solid rgba(176,141,87,0.28);
+    color: var(--product-muted);
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    text-transform: uppercase;
   }
   .product-view {
     font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
@@ -851,12 +891,17 @@
   }
   @media (max-width: 768px) {
     body { padding-bottom: 0; }
+    .products-3d-hero-bg {
+      top: 102px;
+      height: calc(100vh - 102px);
+      min-height: 520px;
+    }
     #hero { min-height: 100vh; padding-top: 102px; }
     #hero::before { background: linear-gradient(180deg, rgba(247,241,230,0.56) 0%, rgba(247,241,230,0.82) 100%); }
     .hero-left {
       min-height: calc(100vh - 102px);
       max-width: none;
-      padding: 148px 24px 62px;
+      padding: 148px 24px 92px;
       justify-content: flex-end;
     }
     .hero-top-label { top: 132px; left: 24px; max-width: 240px; line-height: 1.8; }
@@ -940,7 +985,7 @@
       gap: 4px;
     }
     .search-count { grid-column: auto; }
-    .hero-left { padding: 136px 20px 54px; }
+    .hero-left { padding: 136px 20px 88px; }
     .hero-top-label { top: 126px; left: 20px; }
     .hero-year { top: 126px; right: 20px; }
     .hero-title { font-size: clamp(48px, 16vw, 72px); }
@@ -953,6 +998,7 @@
     .product-sku { font-size: 7px; letter-spacing: 0.18em; margin-bottom: 5px; }
     .product-name { font-size: 15px; line-height: 1.12; margin-bottom: 5px; }
     .product-finish { font-size: 8px; line-height: 1.35; }
+    .product-cert { margin-top: 7px; padding: 4px 5px; font-size: 7px; letter-spacing: 0.12em; }
     .product-view { font-size: 7px; letter-spacing: 0.16em; margin-top: 10px; }
     .variant-count {
       top: 8px;
@@ -1026,6 +1072,9 @@
 </div>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
+<div class="products-3d-hero-bg">
+  <iframe src="3d asset/index.html" title="Hazen 3D architectural lighting scene" loading="eager"></iframe>
+</div>
 <div id="root"></div>
 
 <script>
@@ -1042,5 +1091,57 @@
   window.addEventListener('DOMContentLoaded', window.HAZEN_FINISH_LOADER, { once: true });
 </script>
 <script defer src="products-app.js"></script>
+<script>
+  (() => {
+    const CERTIFICATION_VALUE = 'CE Certified';
+
+    function addCardCertifications(root = document) {
+      root.querySelectorAll('.product-card').forEach((card) => {
+        const info = card.querySelector('.product-info');
+        if (!info || info.querySelector('.product-cert')) return;
+
+        const cert = document.createElement('div');
+        cert.className = 'product-cert';
+        cert.textContent = CERTIFICATION_VALUE;
+
+        const viewLink = info.querySelector('.product-view');
+        if (viewLink) {
+          info.insertBefore(cert, viewLink);
+        } else {
+          info.appendChild(cert);
+        }
+      });
+    }
+
+    function addDetailCertification(root = document) {
+      root.querySelectorAll('.detail-specs').forEach((specs) => {
+        if (specs.querySelector('[data-certification-row="true"]')) return;
+
+        const row = document.createElement('div');
+        row.className = 'detail-spec';
+        row.dataset.certificationRow = 'true';
+        row.innerHTML = '<span class="detail-spec-label">Certification</span><span class="detail-spec-value">CE Certified</span>';
+        specs.appendChild(row);
+      });
+    }
+
+    function applyCertifications() {
+      const root = document.getElementById('root') || document;
+      addCardCertifications(root);
+      addDetailCertification(root);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('root');
+      applyCertifications();
+      if (root) {
+        new MutationObserver(applyCertifications).observe(root, {
+          childList: true,
+          subtree: true,
+        });
+      }
+    });
+  })();
+</script>
 </body>
 </html>
