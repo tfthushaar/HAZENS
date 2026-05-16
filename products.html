@@ -900,28 +900,30 @@
   }
   .detail-close:hover { color: var(--ink); border-color: var(--ink); }
 
-  /* 3D model interaction toggle */
+  /* 3D model interaction toggle — mobile only, fixed to hero-year position */
   .model-toggle-wrap { display: none; }
   @media (pointer: coarse), (max-width: 768px) {
+    .products-3d-hero-bg { touch-action: pan-y; }
     .model-toggle-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
-      position: absolute;
-      top: 104px;
-      right: clamp(20px, 6vw, 96px);
-      z-index: 10;
-      background: #0a0a0a;
-      border: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: 132px;
+      right: 20px;
+      z-index: 200;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.15);
       padding: 6px 10px 6px 12px;
       user-select: none;
+      transition: opacity 0.3s;
     }
     .model-toggle-label {
       font-family: var(--sans);
       font-size: 8px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255,255,255,0.5);
       min-width: 38px;
       text-align: right;
       transition: color 0.2s;
@@ -930,8 +932,8 @@
     .model-toggle-btn {
       position: relative;
       width: 34px; height: 18px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 9px;
       padding: 0; flex-shrink: 0;
       cursor: pointer;
@@ -945,7 +947,7 @@
       position: absolute;
       top: 2px; left: 2px;
       width: 12px; height: 12px;
-      background: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.45);
       border-radius: 50%;
       transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
     }
@@ -1174,12 +1176,12 @@
 <div id="cursor-ring"></div>
 <div class="products-3d-hero-bg">
   <iframe src="3d asset/index.html" title="Hazen 3D architectural lighting scene" loading="eager" id="model3dIframe"></iframe>
-  <div class="model-toggle-wrap" id="modelToggleWrap">
-    <span class="model-toggle-label" id="modelToggleLabel">SCROLL</span>
-    <button class="model-toggle-btn" id="modelToggleBtn" aria-label="Toggle 3D interaction" aria-pressed="false">
-      <span class="model-toggle-knob"></span>
-    </button>
-  </div>
+</div>
+<div class="model-toggle-wrap" id="modelToggleWrap">
+  <span class="model-toggle-label" id="modelToggleLabel">SCROLL</span>
+  <button class="model-toggle-btn" id="modelToggleBtn" aria-label="Toggle 3D interaction" aria-pressed="false">
+    <span class="model-toggle-knob"></span>
+  </button>
 </div>
 <div id="root"></div>
 
@@ -1220,6 +1222,8 @@
   (() => {
     if (!window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 768) return;
     const iframe = document.getElementById('model3dIframe');
+    const heroBg = document.querySelector('.products-3d-hero-bg');
+    const wrap = document.getElementById('modelToggleWrap');
     const btn = document.getElementById('modelToggleBtn');
     const label = document.getElementById('modelToggleLabel');
     if (!iframe || !btn) return;
@@ -1227,27 +1231,33 @@
     iframe.style.pointerEvents = 'none';
     let on = false;
 
-    btn.addEventListener('click', () => {
-      on = !on;
+    const setMode = (active) => {
+      on = active;
       iframe.style.pointerEvents = on ? 'auto' : 'none';
-      iframe.style.touchAction = on ? 'none' : '';
+      if (heroBg) heroBg.style.touchAction = on ? 'none' : 'pan-y';
       btn.classList.toggle('is-on', on);
       btn.setAttribute('aria-pressed', on);
       label.textContent = on ? 'INTERACT' : 'SCROLL';
       label.classList.toggle('is-on', on);
-    });
+    };
+
+    btn.addEventListener('click', () => setMode(!on));
+
+    // Hide toggle when scrolled past hero, show when back
+    const heroHeight = window.innerHeight;
+    window.addEventListener('scroll', () => {
+      if (!wrap) return;
+      const past = window.scrollY > heroHeight * 0.6;
+      wrap.style.opacity = past ? '0' : '1';
+      wrap.style.pointerEvents = past ? 'none' : 'auto';
+      if (past && on) setMode(false);
+    }, { passive: true });
 
     window.addEventListener('resize', () => {
       if (!window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 768) {
         iframe.style.pointerEvents = 'auto'; return;
       }
-      on = false;
-      iframe.style.pointerEvents = 'none';
-      iframe.style.touchAction = '';
-      btn.classList.remove('is-on');
-      btn.setAttribute('aria-pressed', 'false');
-      label.textContent = 'SCROLL';
-      label.classList.remove('is-on');
+      setMode(false);
     });
   })();
 </script>
