@@ -903,7 +903,8 @@
   /* 3D model interaction toggle — mobile only, fixed to hero-year position */
   .model-toggle-wrap { display: none; }
   @media (pointer: coarse), (max-width: 768px) {
-    .products-3d-hero-bg { pointer-events: none !important; }
+    .products-3d-hero-bg { z-index: -1; }
+    .products-3d-hero-bg.is-active { z-index: 10; }
     .model-toggle-wrap {
       display: flex;
       align-items: center;
@@ -1220,20 +1221,21 @@
 <script>
   (() => {
     if (!window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 768) return;
-    const iframe = document.getElementById('model3dIframe');
     const heroBg = document.querySelector('.products-3d-hero-bg');
     const wrap = document.getElementById('modelToggleWrap');
     const btn = document.getElementById('modelToggleBtn');
     const label = document.getElementById('modelToggleLabel');
-    if (!iframe || !btn) return;
+    if (!heroBg || !btn) return;
 
-    iframe.style.pointerEvents = 'none';
     let on = false;
+
+    // Default: push iframe behind page layers so scrolling is completely free
+    heroBg.inert = true;
 
     const setMode = (active) => {
       on = active;
-      iframe.style.pointerEvents = on ? 'auto' : 'none';
-      if (heroBg) heroBg.style.pointerEvents = on ? 'auto' : 'none';
+      heroBg.inert = !on;
+      heroBg.classList.toggle('is-active', on);
       btn.classList.toggle('is-on', on);
       btn.setAttribute('aria-pressed', on);
       label.textContent = on ? 'INTERACT' : 'SCROLL';
@@ -1242,22 +1244,16 @@
 
     btn.addEventListener('click', () => setMode(!on));
 
-    // Hide toggle when scrolled past hero, show when back
-    const heroHeight = window.innerHeight;
+    // Hide toggle when scrolled past hero
     window.addEventListener('scroll', () => {
       if (!wrap) return;
-      const past = window.scrollY > heroHeight * 0.6;
+      const past = window.scrollY > window.innerHeight * 0.6;
       wrap.style.opacity = past ? '0' : '1';
       wrap.style.pointerEvents = past ? 'none' : 'auto';
       if (past && on) setMode(false);
     }, { passive: true });
 
-    window.addEventListener('resize', () => {
-      if (!window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 768) {
-        iframe.style.pointerEvents = 'auto'; return;
-      }
-      setMode(false);
-    });
+    window.addEventListener('resize', () => setMode(false));
   })();
 </script>
 <script defer src="products-app.js"></script>
