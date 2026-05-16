@@ -84,6 +84,7 @@
   .mobile-cat-panel.open,
   .cat-section,
   .detail-overlay.open,
+  .model-toggle-btn,
   footer {
     pointer-events: auto;
   }
@@ -901,6 +902,7 @@
   .detail-close:hover { color: var(--ink); border-color: var(--ink); }
 
   /* 3D model interaction toggle — mobile only, fixed to hero-year position */
+  .hero-tagline-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
   .model-toggle-wrap { display: none; }
   @media (pointer: coarse), (max-width: 768px) {
     .products-3d-hero-bg { z-index: -1; }
@@ -913,7 +915,7 @@
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: 20px;
       padding: 3px 6px 3px 7px;
-      margin-top: 10px;
+      flex-shrink: 0;
       user-select: none;
     }
     .model-toggle-label {
