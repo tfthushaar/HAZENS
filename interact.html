@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://hazenlights.com/interact.html">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="modulepreload" href="./lamp%20asset/index.js?v=8">
+<link rel="modulepreload" href="./lamp%20asset/index.js?v=9">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -367,6 +367,10 @@
       window.addEventListener('hazen-simulator-ready', markReady, { once: true });
       window.addEventListener('error', markFailed, { once: true });
       window.addEventListener('unhandledrejection', markFailed, { once: true });
+
+      // If module already ran before this listener registered, catch it now
+      if (document.querySelector('#root canvas')) { markReady(); }
+
       window.setTimeout(() => {
         if (!settled) {
           const canvas = document.querySelector('#root canvas');
@@ -376,7 +380,7 @@
       window.setTimeout(markFailed, 8000);
     })();
   </script>
-  <script type="module" src="./lamp%20asset/index.js?v=8"></script>
+  <script data-cfasync="false" type="module" src="./lamp%20asset/index.js?v=9"></script>
   <script>
     window.addEventListener('pageshow', (e) => {
       if (e.persisted) window.location.reload();
