@@ -502,6 +502,36 @@
     .content-band { padding: 44px 0; }
   }
 
+  .site-footer {
+    padding: 56px clamp(24px, 6vw, 96px);
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    align-items: end;
+    border-top: 1px solid rgba(17,17,16,0.1);
+    background: #f7f1e6;
+    color: var(--gold);
+  }
+  .site-footer-name {
+    font-family: var(--serif); font-size: 28px; font-weight: 300;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .site-footer-tagline {
+    font-family: var(--serif); font-size: 11px; font-weight: 300;
+    letter-spacing: 0.18em; color: var(--gold-muted); margin-top: 4px;
+  }
+  .site-footer-contact { text-align: center; }
+  .site-footer-label {
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold-muted); margin-bottom: 8px;
+  }
+  .site-footer-email {
+    font-family: var(--serif); font-size: 14px; font-weight: 300;
+    letter-spacing: 0.06em; color: var(--gold-soft); text-decoration: none; display: block;
+  }
+  .site-footer-email:hover { opacity: 0.7; }
+  .site-footer-copy {
+    font-size: 10px; color: var(--gold-muted); letter-spacing: 0.1em; text-align: right;
+  }
+
   @media (hover: none), (pointer: coarse) {
     .nav-button:hover,
     .hero-button:hover {
@@ -765,6 +795,21 @@
       </div>
     </div>
   </section>
+
+  <footer class="site-footer">
+    <div class="site-footer-logo">
+      <div class="site-footer-name">Hazen</div>
+      <div class="site-footer-tagline">Radiance Redefined</div>
+    </div>
+    <div class="site-footer-contact">
+      <div class="site-footer-label">Enquiries &amp; Contact</div>
+      <a class="site-footer-email" href="mailto:info@hazenlights.com">info@hazenlights.com</a>
+    </div>
+    <div class="site-footer-copy">
+      <img src="images/ce-mark.png" alt="CE Certified" style="width:44px;height:44px;object-fit:contain;display:block;margin-left:auto;margin-bottom:10px;">
+      © 2025 Hazen Lighting
+    </div>
+  </footer>
 </main>
 </body>
 </html>
