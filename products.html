@@ -1231,6 +1231,31 @@
         btn.setAttribute('aria-pressed', on);
         if (label) label.textContent = on ? 'INTERACT' : 'SCROLL';
         if (label) label.classList.toggle('is-on', on);
+
+        // In interact mode the heroBg covers #root — show a fixed exit pill on top
+        let exitPill = document.getElementById('model3dExit');
+        if (on) {
+          if (!exitPill) {
+            exitPill = document.createElement('button');
+            exitPill.id = 'model3dExit';
+            exitPill.textContent = 'EXIT';
+            exitPill.style.cssText = [
+              'position:fixed','bottom:32px','left:50%',
+              'transform:translateX(-50%)',
+              'z-index:300','background:rgba(0,0,0,0.75)',
+              'color:rgba(255,255,255,0.85)',
+              'border:1px solid rgba(255,255,255,0.18)',
+              'border-radius:20px','padding:5px 16px',
+              'font-family:var(--sans)','font-size:8px',
+              'letter-spacing:0.22em','text-transform:uppercase',
+              'cursor:pointer'
+            ].join(';');
+            exitPill.addEventListener('click', () => setMode(false));
+            document.body.appendChild(exitPill);
+          }
+        } else {
+          if (exitPill) exitPill.remove();
+        }
       };
 
       btn.addEventListener('click', () => setMode(!on));
