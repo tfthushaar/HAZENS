@@ -913,8 +913,8 @@
       bottom: 18px;
       right: 16px;
       z-index: 10;
-      background: rgba(247,241,230,0.92);
-      border: 1px solid rgba(17,17,16,0.14);
+      background: rgba(10,10,10,0.82);
+      border: 1px solid rgba(255,255,255,0.12);
       padding: 7px 10px 7px 12px;
       backdrop-filter: blur(10px);
       user-select: none;
@@ -924,21 +924,21 @@
       font-size: 8px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--ink2);
+      color: rgba(255,255,255,0.5);
       min-width: 42px;
       text-align: right;
       transition: color 0.2s;
     }
     .model-toggle-label.is-on {
-      color: var(--ink);
+      color: #fff;
       text-align: left;
     }
     .model-toggle-btn {
       position: relative;
       width: 34px;
       height: 18px;
-      background: var(--rule);
-      border: 1px solid rgba(17,17,16,0.14);
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 9px;
       cursor: pointer;
       padding: 0;
@@ -946,8 +946,8 @@
       transition: background 0.25s, border-color 0.25s;
     }
     .model-toggle-btn.is-on {
-      background: var(--ink);
-      border-color: var(--ink);
+      background: var(--luxury-gold);
+      border-color: var(--luxury-gold);
     }
     .model-toggle-knob {
       position: absolute;
@@ -955,13 +955,13 @@
       left: 2px;
       width: 12px;
       height: 12px;
-      background: var(--ink2);
+      background: rgba(255,255,255,0.6);
       border-radius: 50%;
       transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
     }
     .model-toggle-btn.is-on .model-toggle-knob {
       transform: translateX(16px);
-      background: var(--white);
+      background: #fff;
     }
   }
 
@@ -1228,38 +1228,37 @@
 </script>
 <script>
   (() => {
-    const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
+    const isMobile = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
     const iframe = document.getElementById('model3dIframe');
     const btn = document.getElementById('modelToggleBtn');
     const label = document.getElementById('modelToggleLabel');
-    if (!iframe || !btn) return;
+    if (!iframe || !btn || !isMobile()) return;
 
+    // Default: non-interactive so page scrolls freely
+    iframe.style.pointerEvents = 'none';
     let on = false;
 
-    const apply = () => {
-      if (on) {
-        iframe.style.pointerEvents = 'auto';
-        iframe.style.touchAction = 'none';
-        btn.classList.add('is-on');
-        btn.setAttribute('aria-pressed', 'true');
-        label.textContent = 'INTERACT';
-        label.classList.add('is-on');
-      } else {
-        iframe.style.pointerEvents = isTouchDevice() ? 'none' : 'auto';
-        iframe.style.touchAction = '';
-        btn.classList.remove('is-on');
-        btn.setAttribute('aria-pressed', 'false');
-        label.textContent = 'SCROLL';
-        label.classList.remove('is-on');
-      }
-    };
-
-    btn.addEventListener('click', () => { on = !on; apply(); });
+    btn.addEventListener('click', () => {
+      on = !on;
+      iframe.style.pointerEvents = on ? 'auto' : 'none';
+      iframe.style.touchAction = on ? 'none' : '';
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on);
+      label.textContent = on ? 'INTERACT' : 'SCROLL';
+      label.classList.toggle('is-on', on);
+    });
 
     // Reset to scroll mode on orientation change
-    window.addEventListener('resize', () => { on = false; apply(); });
-
-    apply();
+    window.addEventListener('resize', () => {
+      if (!isMobile()) { iframe.style.pointerEvents = 'auto'; return; }
+      on = false;
+      iframe.style.pointerEvents = 'none';
+      iframe.style.touchAction = '';
+      btn.classList.remove('is-on');
+      btn.setAttribute('aria-pressed', 'false');
+      label.textContent = 'SCROLL';
+      label.classList.remove('is-on');
+    });
   })();
 </script>
 <script defer src="products-app.js"></script>
