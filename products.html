@@ -1213,25 +1213,31 @@
   (() => {
     if (!window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 768) return;
     const heroBg = document.querySelector('.products-3d-hero-bg');
-    const btn = document.getElementById('modelToggleBtn');
-    const label = document.getElementById('modelToggleLabel');
-    if (!heroBg || !btn) return;
+    if (!heroBg) return;
 
     heroBg.inert = true;
     let on = false;
 
-    const setMode = (active) => {
-      on = active;
-      heroBg.inert = !on;
-      heroBg.classList.toggle('is-active', on);
-      btn.classList.toggle('is-on', on);
-      btn.setAttribute('aria-pressed', on);
-      label.textContent = on ? 'INTERACT' : 'SCROLL';
-      label.classList.toggle('is-on', on);
+    const init = () => {
+      const btn = document.getElementById('modelToggleBtn');
+      const label = document.getElementById('modelToggleLabel');
+      if (!btn) { requestAnimationFrame(init); return; }
+
+      const setMode = (active) => {
+        on = active;
+        heroBg.inert = !on;
+        heroBg.classList.toggle('is-active', on);
+        btn.classList.toggle('is-on', on);
+        btn.setAttribute('aria-pressed', on);
+        if (label) label.textContent = on ? 'INTERACT' : 'SCROLL';
+        if (label) label.classList.toggle('is-on', on);
+      };
+
+      btn.addEventListener('click', () => setMode(!on));
+      window.addEventListener('resize', () => setMode(false));
     };
 
-    btn.addEventListener('click', () => setMode(!on));
-    window.addEventListener('resize', () => setMode(false));
+    requestAnimationFrame(init);
   })();
 </script>
 <script>
