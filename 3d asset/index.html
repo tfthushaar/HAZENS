@@ -580,8 +580,6 @@
         controls.enableZoom = false;
         controls.enablePan = false;
 
-        // Allow vertical scroll to pass through to the outer page on mobile
-        renderer.domElement.style.touchAction = 'pan-y';
 
         // Lights
         const ambient = new THREE.AmbientLight(0xffeedd, 3);
