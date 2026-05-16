@@ -910,15 +910,14 @@
       align-items: center;
       gap: 7px;
       position: fixed;
-      top: 132px;
-      right: 20px;
+      bottom: 170px;
+      left: 24px;
       z-index: 200;
       background: #000;
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 20px;
       padding: 5px 8px 5px 10px;
       user-select: none;
-      transition: opacity 0.3s;
     }
     .model-toggle-label {
       font-family: var(--sans);
@@ -1240,16 +1239,6 @@
     };
 
     btn.addEventListener('click', () => setMode(!on));
-
-    // Hide toggle when scrolled past hero
-    window.addEventListener('scroll', () => {
-      if (!wrap) return;
-      const past = window.scrollY > window.innerHeight * 0.6;
-      wrap.style.opacity = past ? '0' : '1';
-      wrap.style.pointerEvents = past ? 'none' : 'auto';
-      if (past && on) setMode(false);
-    }, { passive: true });
-
     window.addEventListener('resize', () => setMode(false));
   })();
 </script>
