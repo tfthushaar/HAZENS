@@ -903,38 +903,37 @@
   /* 3D model interaction toggle — mobile only, fixed to hero-year position */
   .model-toggle-wrap { display: none; }
   @media (pointer: coarse), (max-width: 768px) {
-    .products-3d-hero-bg { touch-action: pan-y; }
+    .products-3d-hero-bg { pointer-events: none !important; }
     .model-toggle-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       position: fixed;
       top: 132px;
       right: 20px;
       z-index: 200;
       background: #000;
-      border: 1px solid rgba(255,255,255,0.15);
-      padding: 6px 10px 6px 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px;
+      padding: 5px 8px 5px 10px;
       user-select: none;
       transition: opacity 0.3s;
     }
     .model-toggle-label {
       font-family: var(--sans);
-      font-size: 8px;
-      letter-spacing: 0.22em;
+      font-size: 7px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      min-width: 38px;
-      text-align: right;
+      color: rgba(255,255,255,0.45);
       transition: color 0.2s;
     }
-    .model-toggle-label.is-on { color: #fff; text-align: left; }
+    .model-toggle-label.is-on { color: rgba(255,255,255,0.9); }
     .model-toggle-btn {
       position: relative;
-      width: 34px; height: 18px;
+      width: 28px; height: 15px;
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
       padding: 0; flex-shrink: 0;
       cursor: pointer;
       transition: background 0.25s, border-color 0.25s;
@@ -946,13 +945,13 @@
     .model-toggle-knob {
       position: absolute;
       top: 2px; left: 2px;
-      width: 12px; height: 12px;
-      background: rgba(255,255,255,0.45);
+      width: 9px; height: 9px;
+      background: rgba(255,255,255,0.4);
       border-radius: 50%;
       transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
     }
     .model-toggle-btn.is-on .model-toggle-knob {
-      transform: translateX(16px);
+      transform: translateX(13px);
       background: #fff;
     }
   }
@@ -1234,7 +1233,7 @@
     const setMode = (active) => {
       on = active;
       iframe.style.pointerEvents = on ? 'auto' : 'none';
-      if (heroBg) heroBg.style.touchAction = on ? 'none' : 'pan-y';
+      if (heroBg) heroBg.style.pointerEvents = on ? 'auto' : 'none';
       btn.classList.toggle('is-on', on);
       btn.setAttribute('aria-pressed', on);
       label.textContent = on ? 'INTERACT' : 'SCROLL';
