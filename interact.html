@@ -377,5 +377,10 @@
     })();
   </script>
   <script type="module" src="./lamp%20asset/index.js?v=8"></script>
+  <script>
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) window.location.reload();
+    });
+  </script>
 </body>
 </html>
