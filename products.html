@@ -899,7 +899,7 @@
   /* Footer */
   footer {
     padding: 56px 48px;
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    display: grid; grid-template-columns: 1fr 1fr;
     align-items: end; border-top: 1px solid var(--rule);
     background: var(--white);
     color: var(--ink);
@@ -907,9 +907,10 @@
   .footer-logo {
     font-family: var(--serif); font-size: 32px; font-weight: 300;
     letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
   }
-  .footer-mid { text-align: center; }
-  .footer-tagline { font-family: var(--serif); font-size: 14px; font-style: italic; color: var(--ink2); }
+  .footer-mid { display: none; }
+  .footer-tagline { font-family: var(--serif); font-size: 11px; font-style: italic; color: var(--ink2); letter-spacing: 0.04em; }
   .footer-copy { font-size: 10px; color: var(--ink3); letter-spacing: 0.1em; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 
   @media (max-width: 1024px) {
